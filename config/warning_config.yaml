@@ -1,0 +1,18 @@
+# Collision warning thresholds
+
+# Time-To-Collision thresholds (in seconds)
+critical_ttc: 1.5        # Immediate braking or high danger alert
+warn_ttc: 4.0            # Early caution alert
+
+# Distance thresholds (meters)
+critical_distance: 3.0   # Too close to your scooter
+warning_distance: 6.0    # Within caution range
+
+# Lateral overlap threshold (meters)
+# If lateral overlap > threshold & Z small -> possible collision path
+lateral_overlap_threshold: 0.5
+
+# Flags
+enable_trajectory_prediction: true
+prediction_horizon: 5.0        # seconds
+prediction_step: 0.2           # seconds

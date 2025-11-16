@@ -1,0 +1,14 @@
+# Camera intrinsic parameters
+fx: 1000        # focal length x (pixels)
+fy: 1000        # focal length y (pixels)
+cx: 640         # principal point x (pixels)
+cy: 360         # principal point y (pixels)
+
+# Camera mounting configuration
+mounting_height: 1.0        # meters (distance from camera lens center to ground)
+pitch_deg: 8.0              # downward tilt of camera (positive = pointing down)
+
+# Notes:
+# - Replace fx, fy, cx, cy after performing camera calibration.
+# - mounting_height should be measured with a tape scale.
+# - pitch_deg can be estimated manually or from IMU.

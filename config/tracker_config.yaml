@@ -1,0 +1,21 @@
+# Tracker settings (currently using simple CentroidTracker)
+
+# Maximum distance (pixels) between detections & tracks
+max_track_distance: 100
+
+# Maximum frames a track can remain unassigned before removal
+max_lost_frames: 10
+
+# Minimum detection confidence to track an object
+min_detection_confidence: 0.25
+
+# If later replacing with ByteTrack or DeepSORT, use these settings:
+bytetrack:
+  track_thresh: 0.5
+  high_thresh: 0.6
+  match_thresh: 0.8
+
+deepsort:
+  max_cosine_distance: 0.2
+  nn_budget: 100
+  max_iou_distance: 0.7
