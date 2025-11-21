@@ -1,48 +1,77 @@
 # Python
 __pycache__/
 *.py[cod]
-*.pyo
-*.pyd
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
 *.egg-info/
-pip-log.txt
-pip-delete-this-directory.txt
+.installed.cfg
+*.egg
 
-# Virtual environments
+# Virtual Environment
 .venv/
-env/
 venv/
 ENV/
+env/
 
-# VS Code
+# IDEs
 .vscode/
-.vscode/*
+.idea/
+*.swp
+*.swo
+*~
 
-# Data and models
-data/
-models/
-*.pt
-*.pth
-*.onnx
-
-# Jupyter and notebooks
+# Jupyter Notebooks
 .ipynb_checkpoints
 *.ipynb
 
-# Logs and runtime
+# Models (large files - use Git LFS or don't commit)
+*.pt
+*.pth
+*.onnx
+*.trt
+*.engine
+
+# Data
+*.jpg
+*.jpeg
+*.png
+*.mp4
+*.avi
+*.mov
+dataset/train/
+dataset/val/
+dataset/test/
+data/samples/
+data/calibration/checkerboard_images/
+
+# Logs
 *.log
 logs/
-*.sqlite3
-*.db
+runs/
 
-# macOS / Windows
+# OS
 .DS_Store
 Thumbs.db
 
-# Coverage / packaging
-htmlcov/
-.coverage
-dist/
-build/
+# Training outputs
+plots/
+checkpoints/*/epoch_*.pth
 
-# Misc
-*.pyc
+# Temporary files
+*.tmp
+*.bak
+*.swp
+temp/

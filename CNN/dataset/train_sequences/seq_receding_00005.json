@@ -1,0 +1,65 @@
+{
+  "scene_id": "1",
+  "track_id": 31,
+  "vehicle_class": "car",
+  "distance_label": "receding",
+  "num_frames": 5,
+  "frames": [
+    {
+      "frame_idx": 26,
+      "bbox": [
+        0,
+        473,
+        380,
+        798
+      ],
+      "area": 123500,
+      "confidence": 0.8979671597480774
+    },
+    {
+      "frame_idx": 27,
+      "bbox": [
+        0,
+        468,
+        520,
+        738
+      ],
+      "area": 140400,
+      "confidence": 0.9215958714485168
+    },
+    {
+      "frame_idx": 36,
+      "bbox": [
+        0,
+        474,
+        406,
+        717
+      ],
+      "area": 98658,
+      "confidence": 0.9104166626930237
+    },
+    {
+      "frame_idx": 37,
+      "bbox": [
+        0,
+        441,
+        389,
+        775
+      ],
+      "area": 129926,
+      "confidence": 0.9094339609146118
+    },
+    {
+      "frame_idx": 38,
+      "bbox": [
+        0,
+        445,
+        256,
+        744
+      ],
+      "area": 76544,
+      "confidence": 0.8836233019828796
+    }
+  ],
+  "area_change_pct": -38.02105263157895
+}

@@ -1,0 +1,65 @@
+{
+  "scene_id": "6",
+  "track_id": 42,
+  "vehicle_class": "car",
+  "distance_label": "approaching",
+  "num_frames": 5,
+  "frames": [
+    {
+      "frame_idx": 30,
+      "bbox": [
+        822,
+        466,
+        909,
+        509
+      ],
+      "area": 3741,
+      "confidence": 0.42832306027412415
+    },
+    {
+      "frame_idx": 36,
+      "bbox": [
+        766,
+        464,
+        923,
+        529
+      ],
+      "area": 10205,
+      "confidence": 0.8356085419654846
+    },
+    {
+      "frame_idx": 37,
+      "bbox": [
+        779,
+        460,
+        988,
+        536
+      ],
+      "area": 15884,
+      "confidence": 0.8091883659362793
+    },
+    {
+      "frame_idx": 38,
+      "bbox": [
+        698,
+        445,
+        943,
+        554
+      ],
+      "area": 26705,
+      "confidence": 0.888745903968811
+    },
+    {
+      "frame_idx": 39,
+      "bbox": [
+        653,
+        448,
+        881,
+        576
+      ],
+      "area": 29184,
+      "confidence": 0.876249372959137
+    }
+  ],
+  "area_change_pct": 680.112269446672
+}

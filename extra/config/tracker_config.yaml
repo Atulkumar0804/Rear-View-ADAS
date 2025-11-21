@@ -1,0 +1,25 @@
+# Tracker settings (currently using simple CentroidTracker)
+
+# Maximum distance (pixels) between detections & tracks
+max_track_distance: 80      # Reduced for stricter matching
+
+# Maximum frames a track can remain unassigned before removal
+max_lost_frames: 5          # Reduced to remove fleeting false positives faster
+
+# Minimum detection confidence to track an object
+min_detection_confidence: 0.70  # Increased to match model_config
+
+# Minimum age (frames) before a track is considered confirmed/stable
+# Helps filter out single-frame false positives
+min_confirmed_age: 8        # Only show objects tracked for 8+ frames (more stable)
+
+# If later replacing with ByteTrack or DeepSORT, use these settings:
+bytetrack:
+  track_thresh: 0.5
+  high_thresh: 0.6
+  match_thresh: 0.8
+
+deepsort:
+  max_cosine_distance: 0.2
+  nn_budget: 100
+  max_iou_distance: 0.7

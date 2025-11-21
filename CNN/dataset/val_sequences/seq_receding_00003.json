@@ -1,0 +1,87 @@
+{
+  "scene_id": "4",
+  "track_id": 3,
+  "vehicle_class": "truck",
+  "distance_label": "receding",
+  "num_frames": 7,
+  "frames": [
+    {
+      "frame_idx": 5,
+      "bbox": [
+        1108,
+        42,
+        1599,
+        713
+      ],
+      "area": 329461,
+      "confidence": 0.5121288299560547
+    },
+    {
+      "frame_idx": 6,
+      "bbox": [
+        1036,
+        207,
+        1599,
+        783
+      ],
+      "area": 324288,
+      "confidence": 0.5136722922325134
+    },
+    {
+      "frame_idx": 7,
+      "bbox": [
+        1006,
+        370,
+        1465,
+        646
+      ],
+      "area": 126684,
+      "confidence": 0.8043017387390137
+    },
+    {
+      "frame_idx": 8,
+      "bbox": [
+        964,
+        372,
+        1270,
+        598
+      ],
+      "area": 69156,
+      "confidence": 0.8665619492530823
+    },
+    {
+      "frame_idx": 9,
+      "bbox": [
+        959,
+        429,
+        1176,
+        578
+      ],
+      "area": 32333,
+      "confidence": 0.6973991990089417
+    },
+    {
+      "frame_idx": 10,
+      "bbox": [
+        991,
+        438,
+        1128,
+        563
+      ],
+      "area": 17125,
+      "confidence": 0.41566234827041626
+    },
+    {
+      "frame_idx": 13,
+      "bbox": [
+        1020,
+        461,
+        1108,
+        541
+      ],
+      "area": 7040,
+      "confidence": 0.5849330425262451
+    }
+  ],
+  "area_change_pct": -97.86317652165202
+}
