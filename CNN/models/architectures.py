@@ -38,7 +38,7 @@ class DepthwiseSeparableConv(nn.Module):
 
 class MobileNetInspired(nn.Module):
     """Lightweight MobileNet-inspired model for vehicle classification"""
-    def __init__(self, num_classes=6):
+    def __init__(self, num_classes=15):
         super().__init__()
         
         # Initial convolution
@@ -65,7 +65,7 @@ class MobileNetInspired(nn.Module):
         # Global average pooling and classifier
         self.avgpool = nn.AdaptiveAvgPool2d(1)
         self.classifier = nn.Sequential(
-            nn.Dropout(0.2),
+            nn.Dropout(0.4),  # Increased dropout for large dataset
             nn.Linear(1024, num_classes)
         )
         
@@ -106,7 +106,7 @@ class FireModule(nn.Module):
 
 class SqueezeNetInspired(nn.Module):
     """Efficient SqueezeNet-inspired model"""
-    def __init__(self, num_classes=6):
+    def __init__(self, num_classes=15):
         super().__init__()
         
         self.features = nn.Sequential(
@@ -180,7 +180,7 @@ class ResidualBlock(nn.Module):
 
 class ResNetInspired(nn.Module):
     """Deep ResNet-inspired model"""
-    def __init__(self, num_classes=6, num_blocks=[2, 2, 2, 2]):
+    def __init__(self, num_classes=15, num_blocks=[2, 2, 2, 2]):
         super().__init__()
         
         self.in_channels = 64
@@ -201,7 +201,8 @@ class ResNetInspired(nn.Module):
         
         # Classifier
         self.avgpool = nn.AdaptiveAvgPool2d((1, 1))
-        self.fc = nn.Linear(512, num_classes)
+        self.dropout = nn.Dropout(0.5)  # Dropout for regularization
+        self.fc = nn.Linear(512, num_classes)  # ResidualBlock doesn't have expansion
         
     def _make_layer(self, out_channels, num_blocks, stride):
         layers = []
@@ -221,6 +222,7 @@ class ResNetInspired(nn.Module):
         x = self.layer4(x)
         x = self.avgpool(x)
         x = torch.flatten(x, 1)
+        x = self.dropout(x)  # Apply dropout before final layer
         x = self.fc(x)
         return x
 
@@ -351,7 +353,7 @@ class LSTMDistanceEstimator(nn.Module):
 # Model Factory
 # ================================
 
-def create_model(model_type, num_classes=6, **kwargs):
+def create_model(model_type, num_classes=15, **kwargs):
     """Factory function to create models"""
     
     # Filter out 'pretrained' from kwargs for TransferLearningModel

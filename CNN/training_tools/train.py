@@ -14,7 +14,7 @@ Features:
 import torch
 import torch.nn as nn
 import torch.optim as optim
-from torch.utils.data import Dataset, DataLoader
+from torch.utils.data import Dataset, DataLoader, random_split
 from torchvision import transforms
 import numpy as np
 import cv2
@@ -30,27 +30,32 @@ import time
 sys.path.append('.')
 from models.architectures import create_model
 
-# Configuration
-BATCH_SIZE = 32
-NUM_EPOCHS = 50
-LEARNING_RATE = 0.001
+# Configuration - Optimized for UVH-26 (252K samples) on RTX A6000
+BATCH_SIZE = 128  # Larger batch for better gradient estimates with RTX A6000 (48GB VRAM)
+NUM_EPOCHS = 100  # More epochs for large dataset convergence
+LEARNING_RATE = 0.001  # Standard Adam LR, will be adjusted by scheduler
 DEVICE = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-NUM_WORKERS = 4
-EARLY_STOPPING_PATIENCE = 10
+NUM_WORKERS = 8  # Increased for faster data loading
+EARLY_STOPPING_PATIENCE = 15  # Increased patience for large dataset
+WEIGHT_DECAY = 1e-4  # L2 regularization
+LABEL_SMOOTHING = 0.1  # Label smoothing for better generalization
 
 print(f"🔥 Using device: {DEVICE}")
 if torch.cuda.is_available():
     print(f"   GPU: {torch.cuda.get_device_name(0)}")
 
-# Data augmentation
+# Data augmentation - Enhanced for large dataset
 train_transform = transforms.Compose([
     transforms.ToPILImage(),
     transforms.RandomHorizontalFlip(p=0.5),
-    transforms.RandomRotation(15),
-    transforms.ColorJitter(brightness=0.3, contrast=0.3, saturation=0.2, hue=0.1),
-    transforms.RandomAffine(degrees=0, translate=(0.1, 0.1), scale=(0.9, 1.1)),
+    transforms.RandomRotation(20),  # Increased rotation
+    transforms.ColorJitter(brightness=0.4, contrast=0.4, saturation=0.3, hue=0.15),  # Stronger color jitter
+    transforms.RandomAffine(degrees=0, translate=(0.15, 0.15), scale=(0.85, 1.15)),  # More aggressive affine
+    transforms.RandomPerspective(distortion_scale=0.2, p=0.3),  # Add perspective transform
+    transforms.RandomGrayscale(p=0.1),  # Random grayscale for robustness
     transforms.ToTensor(),
-    transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+    transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
+    transforms.RandomErasing(p=0.3, scale=(0.02, 0.15))  # Random erasing for occlusion robustness
 ])
 
 val_transform = transforms.Compose([
@@ -90,6 +95,144 @@ class VehicleDataset(Dataset):
             # Return a black image
             img = np.zeros((224, 224, 3), dtype=np.uint8)
         img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+        
+        if self.transform:
+            img = self.transform(img)
+        
+        return img, label
+
+
+class UVH26Dataset(Dataset):
+    """Dataset for UVH-26 vehicle classification from COCO annotations
+    
+    Supports 15 classes (14 vehicle classes + Person):
+    1-Hatchback, 2-Sedan, 3-SUV, 4-MUV, 5-Bus, 6-Truck, 7-Three-wheeler,
+    8-Two-wheeler, 9-LCV, 10-Mini-bus, 11-Tempo-traveller, 12-Bicycle, 13-Van, 14-Other, 15-Person
+    """
+    def __init__(self, root_dir, split='train', transform=None, use_staple=False, person_crops_dir=None):
+        self.root_dir = Path(root_dir)
+        self.transform = transform
+        self.split = split
+        
+        # 15 classes: 14 UVH-26 vehicle classes + Person (1-indexed in JSON, 0-indexed for model)
+        self.classes = [
+            'Hatchback', 'Sedan', 'SUV', 'MUV', 'Bus', 'Truck', 'Three-wheeler',
+            'Two-wheeler', 'LCV', 'Mini-bus', 'Tempo-traveller', 'Bicycle', 'Van', 'Other', 'Person'
+        ]
+        
+        # Load COCO format annotations
+        if split == 'train':
+            json_file = 'UVH-26-ST-Train.json' if use_staple else 'UVH-26-MV-Train.json'
+            ann_path = self.root_dir / 'UVH-26-Train' / json_file
+            self.img_dir = self.root_dir / 'UVH-26-Train' / 'data'
+        else:  # val or test
+            json_file = 'UVH-26-ST-Val.json' if use_staple else 'UVH-26-MV-Val.json'
+            ann_path = self.root_dir / 'UVH-26-Val' / json_file
+            self.img_dir = self.root_dir / 'UVH-26-Val' / 'data'
+        
+        print(f"📂 Loading annotations from: {ann_path}")
+        with open(ann_path, 'r') as f:
+            self.coco_data = json.load(f)
+        
+        # Build a fast lookup of available image files (filename -> full path)
+        print(f"📂 Scanning available image files...")
+        self.available_files = {}
+        for img_file in self.img_dir.rglob('*.png'):
+            filename = img_file.name  # Just the filename without path
+            self.available_files[filename] = img_file
+        print(f"✅ Found {len(self.available_files)} image files on disk")
+        
+        # Build image_id to filename mapping
+        self.img_id_to_file = {img['id']: img['file_name'] for img in self.coco_data['images']}
+        
+        # Build samples: [(image_path, bbox, category_id), ...]
+        # Only include samples where the image file actually exists
+        self.samples = []
+        skipped = 0
+        for ann in self.coco_data['annotations']:
+            img_id = ann['image_id']
+            if img_id in self.img_id_to_file:
+                img_file = self.img_id_to_file[img_id]
+                
+                # Check if file actually exists on disk
+                if img_file not in self.available_files:
+                    skipped += 1
+                    continue
+                    
+                bbox = ann['bbox']  # [x, y, width, height]
+                category_id = ann['category_id'] - 1  # Convert to 0-indexed (0-13)
+                
+                # Map category ID: 0-12 stay same, 13 (Others) maps to 13, add Person as class 14 later
+                # Skip if category out of range
+                if 0 <= category_id < 14:  # Accept original 14 classes
+                    full_path = self.available_files[img_file]
+                    self.samples.append((full_path, bbox, category_id))
+        
+        print(f"✅ Loaded {len(self.samples)} valid {split} samples (skipped {skipped} missing files)")
+        
+        # Add Person class samples if person_crops_dir is provided
+        if person_crops_dir is not None:
+            person_dir = Path(person_crops_dir) / split / 'Person'
+            if person_dir.exists():
+                person_count = 0
+                for img_path in person_dir.glob('*.jpg'):
+                    # No bbox needed for person crops (already cropped)
+                    # Use full image bbox [0, 0, width, height] - will be handled in __getitem__
+                    self.samples.append((img_path, None, 14))  # 14 is Person class index
+                    person_count += 1
+                print(f"✅ Added {person_count} Person samples from {person_dir}")
+            else:
+                print(f"⚠️ Person crops directory not found: {person_dir}")
+                print(f"   Run: python scripts/add_person_class.py to generate Person samples")
+        
+        # Print class distribution
+        class_counts = {i: 0 for i in range(len(self.classes))}
+        for sample in self.samples:
+            cat_id = sample[2]  # category_id is the 3rd element
+            if cat_id < len(self.classes):
+                class_counts[cat_id] += 1
+        print(f"📊 Class distribution:")
+        for i, cls in enumerate(self.classes):
+            if class_counts[i] > 0:
+                print(f"   {cls:<18}: {class_counts[i]:>6} samples")
+            elif i == 14:  # Person class
+                print(f"   {cls:<18}: {class_counts[i]:>6} samples (run add_person_class.py)")
+    
+    def __len__(self):
+        return len(self.samples)
+    
+    def __getitem__(self, idx):
+        img_path, bbox, label = self.samples[idx]
+        
+        # Load image (img_path is already the full Path object)
+        img = cv2.imread(str(img_path))
+        
+        if img is None:
+            # Should not happen since we filtered missing files, but just in case
+            print(f"⚠️ Warning: Could not read {img_path}")
+            img = np.zeros((224, 224, 3), dtype=np.uint8)
+        else:
+            # If bbox is None, image is already cropped (e.g., Person crops)
+            if bbox is not None:
+                # Crop to bounding box [x, y, width, height]
+                x, y, w, h = [int(v) for v in bbox]
+                h_img, w_img = img.shape[:2]
+                
+                # Clamp bbox to image boundaries
+                x1 = max(0, x)
+                y1 = max(0, y)
+                x2 = min(w_img, x + w)
+                y2 = min(h_img, y + h)
+                
+                if x2 > x1 and y2 > y1:
+                    img = img[y1:y2, x1:x2]
+                else:
+                    # Invalid bbox, use full image
+                    pass
+            
+            # Resize to 224x224
+            img = cv2.resize(img, (224, 224))
+            img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
         
         if self.transform:
             img = self.transform(img)
@@ -169,22 +312,25 @@ class SequenceDataset(Dataset):
 
 class EarlyStopping:
     """Early stopping to prevent overfitting"""
-    def __init__(self, patience=10, min_delta=0.001):
+    def __init__(self, patience=15, min_delta=0.0005, mode='min'):
         self.patience = patience
         self.min_delta = min_delta
+        self.mode = mode
         self.counter = 0
-        self.best_loss = None
+        self.best_score = None
         self.early_stop = False
         
-    def __call__(self, val_loss):
-        if self.best_loss is None:
-            self.best_loss = val_loss
-        elif val_loss > self.best_loss - self.min_delta:
+    def __call__(self, metric):
+        score = -metric if self.mode == 'min' else metric
+        
+        if self.best_score is None:
+            self.best_score = score
+        elif score < self.best_score + self.min_delta:
             self.counter += 1
             if self.counter >= self.patience:
                 self.early_stop = True
         else:
-            self.best_loss = val_loss
+            self.best_score = score
             self.counter = 0
 
 
@@ -211,7 +357,8 @@ class Trainer:
         }
         
         self.best_val_acc = 0.0
-        self.early_stopping = EarlyStopping(patience=EARLY_STOPPING_PATIENCE)
+        self.early_stopping = EarlyStopping(patience=EARLY_STOPPING_PATIENCE, min_delta=0.0005, mode='max')
+        self.grad_clip = 1.0  # Gradient clipping threshold
     
     def train_epoch(self):
         """Train for one epoch"""
@@ -221,7 +368,7 @@ class Trainer:
         total = 0
         
         pbar = tqdm(self.train_loader, desc='Training')
-        for inputs, labels in pbar:
+        for batch_idx, (inputs, labels) in enumerate(pbar):
             inputs, labels = inputs.to(self.device), labels.to(self.device)
             
             # Handle sequences (LSTM input)
@@ -238,7 +385,15 @@ class Trainer:
             
             loss = self.criterion(outputs, labels)
             loss.backward()
+            
+            # Gradient clipping for stable training
+            torch.nn.utils.clip_grad_norm_(self.model.parameters(), self.grad_clip)
+            
             self.optimizer.step()
+            
+            # Step scheduler per batch for CosineAnnealingWarmRestarts
+            if isinstance(self.scheduler, optim.lr_scheduler.CosineAnnealingWarmRestarts):
+                self.scheduler.step()
             
             running_loss += loss.item()
             _, predicted = outputs.max(1)
@@ -314,24 +469,29 @@ class Trainer:
             # Validate
             val_loss, val_acc, val_preds, val_labels = self.validate()
             
-            # Update learning rate
-            if self.scheduler:
-                self.scheduler.step(val_loss)
-            
-            current_lr = self.optimizer.param_groups[0]['lr']
-            
             # Save history
             self.history['train_loss'].append(train_loss)
             self.history['train_acc'].append(train_acc)
             self.history['val_loss'].append(val_loss)
             self.history['val_acc'].append(val_acc)
-            self.history['lr'].append(current_lr)
+            self.history['lr'].append(self.optimizer.param_groups[0]['lr'])
+            
+            # Learning rate scheduling
+            if isinstance(self.scheduler, optim.lr_scheduler.ReduceLROnPlateau):
+                self.scheduler.step(val_loss)
+            elif isinstance(self.scheduler, optim.lr_scheduler.CosineAnnealingWarmRestarts):
+                # For CosineAnnealingWarmRestarts, step is called per batch in train_epoch
+                pass
+            elif self.scheduler:
+                self.scheduler.step()
+            
+            current_lr = self.optimizer.param_groups[0]['lr']
             
             print(f"\nTrain Loss: {train_loss:.4f} | Train Acc: {train_acc:.2f}%")
             print(f"Val Loss: {val_loss:.4f} | Val Acc: {val_acc:.2f}%")
             print(f"Learning Rate: {current_lr:.6f}")
             
-            # Save best model
+            # Save best model based on validation accuracy
             if val_acc > self.best_val_acc:
                 self.best_val_acc = val_acc
                 checkpoint_path = self.checkpoint_dir / 'best_model.pth'
@@ -339,13 +499,15 @@ class Trainer:
                     'epoch': epoch,
                     'model_state_dict': self.model.state_dict(),
                     'optimizer_state_dict': self.optimizer.state_dict(),
+                    'scheduler_state_dict': self.scheduler.state_dict(),
                     'val_acc': val_acc,
+                    'val_loss': val_loss,
                     'history': self.history
                 }, checkpoint_path)
-                print(f"✅ Saved best model (Val Acc: {val_acc:.2f}%)")
+                print(f"💾 Saved best model (Val Acc: {val_acc:.2f}%)")
             
-            # Early stopping
-            self.early_stopping(val_loss)
+            # Early stopping based on validation accuracy
+            self.early_stopping(val_acc)
             if self.early_stopping.early_stop:
                 print(f"\n⚠️  Early stopping triggered at epoch {epoch+1}")
                 break
@@ -465,8 +627,27 @@ def evaluate_model(model, test_loader, classes, device, model_name, save_dir):
     test_acc = accuracy_score(all_labels, all_preds) * 100
     
     print(f"\n📊 Test Accuracy: {test_acc:.2f}%\n")
+    # Print classification report safely: if some classes have zero samples,
+    # sklearn.classification_report raises an error when target_names length
+    # doesn't match the number of labels present. Filter to present labels.
     print("Classification Report:")
-    print(classification_report(all_labels, all_preds, target_names=classes, digits=4))
+    if len(all_labels) == 0:
+        print("No test samples available to create classification report.")
+    else:
+        present_labels = sorted(list(set(all_labels)))
+        # Build target names for present labels only
+        present_target_names = [classes[i] for i in present_labels]
+        try:
+            print(classification_report(all_labels, all_preds, labels=present_labels,
+                                        target_names=present_target_names, digits=4))
+        except Exception as e:
+            # Fallback: print a simpler report and continue
+            print(f"⚠️  Could not produce full classification_report: {e}")
+            from collections import Counter
+            counts = Counter(all_labels)
+            print("Label counts in test set:")
+            for lbl in present_labels:
+                print(f"  {lbl}: {counts[lbl]} samples - {classes[lbl]}")
     
     # Plot confusion matrix
     cm_path = save_dir / f'{model_name}_confusion_matrix.png'
@@ -485,7 +666,9 @@ def main():
     script_dir = Path(__file__).parent.resolve()
     cnn_dir = script_dir.parent
     
-    dataset_dir = cnn_dir / 'dataset'
+    # Use UVH-26 dataset
+    dataset_dir = cnn_dir / 'datasets' / 'UVH-26'
+    person_crops_dir = cnn_dir / 'datasets' / 'person_crops'  # Optional Person class directory
     plots_dir = cnn_dir / 'plots'
     checkpoints_dir = cnn_dir / 'checkpoints'
     
@@ -493,16 +676,31 @@ def main():
     checkpoints_dir.mkdir(exist_ok=True)
     
     # ================================
-    # Part 1: Vehicle Classification
+    # Part 1: Vehicle Classification (UVH-26) + Person
     # ================================
     print("\n" + "="*60)
-    print("📦 PART 1: Vehicle Classification")
+    print("📦 PART 1: Vehicle Classification on UVH-26 Dataset + Person")
     print("="*60)
     
-    # Load datasets
-    train_dataset = VehicleDataset(dataset_dir, split='train', transform=train_transform)
-    val_dataset = VehicleDataset(dataset_dir, split='val', transform=val_transform)
-    test_dataset = VehicleDataset(dataset_dir, split='test', transform=val_transform)
+    # Load UVH-26 datasets (15 classes: 14 vehicles + Person)
+    print("\n🔄 Loading UVH-26 datasets...")
+    train_dataset = UVH26Dataset(dataset_dir, split='train', transform=train_transform, 
+                                  use_staple=False, person_crops_dir=person_crops_dir)
+    
+    # Load full validation set, then split into val and test (50/50)
+    print("🔄 Loading validation dataset for splitting...")
+    full_val_dataset = UVH26Dataset(dataset_dir, split='val', transform=val_transform, 
+                                     use_staple=False, person_crops_dir=person_crops_dir)
+    
+    # Split validation set: 50% for validation, 50% for testing
+    val_size = len(full_val_dataset) // 2
+    test_size = len(full_val_dataset) - val_size
+    
+    # Use random_split with a fixed seed for reproducibility
+    torch.manual_seed(42)
+    val_dataset, test_dataset = random_split(full_val_dataset, [val_size, test_size])
+    
+    print(f"✅ Split validation set: {val_size:,} val samples, {test_size:,} test samples")
     
     train_loader = DataLoader(train_dataset, batch_size=BATCH_SIZE, shuffle=True, 
                              num_workers=NUM_WORKERS, pin_memory=True)
@@ -515,13 +713,11 @@ def main():
     print(f"\n📊 Classes: {train_dataset.classes}")
     print(f"📊 Number of classes: {num_classes}")
     
-    # Models to train
+    # Train custom CNN architectures
     models_to_train = [
         'mobilenet_inspired',
         'squeezenet_inspired', 
-        'resnet_inspired',
-        'transfer_mobilenet',
-        'transfer_resnet18'
+        'resnet_inspired'
     ]
     
     results = {}
@@ -530,24 +726,54 @@ def main():
         print(f"\n{'='*60}")
         print(f"🔧 Training: {model_name}")
         print(f"{'='*60}")
-        
+        # Create checkpoint directory
+        model_checkpoint_dir = checkpoints_dir / model_name
+        model_checkpoint_dir.mkdir(exist_ok=True)
+
+        # If a best checkpoint already exists, skip training and evaluate
+        best_ckpt = model_checkpoint_dir / 'best_model.pth'
+        if best_ckpt.exists():
+            print(f"⏭️  Checkpoint found for {model_name}, checking compatibility...")
+            model = create_model(model_name, num_classes=num_classes)
+            model = model.to(DEVICE)
+            checkpoint = torch.load(best_ckpt, map_location=DEVICE)
+            
+            # Check if checkpoint is compatible by trying to load it
+            try:
+                model.load_state_dict(checkpoint['model_state_dict'], strict=True)
+                print(f"✅ Checkpoint compatible, skipping training and evaluating existing model.")
+            except (RuntimeError, KeyError) as e:
+                print(f"⚠️  Checkpoint for {model_name} is incompatible: {e}")
+                print(f"   Removing old checkpoint and training from scratch...")
+                # Don't use the incompatible checkpoint - will train from scratch below
+            else:
+                # Checkpoint loaded successfully, evaluate and skip training
+                test_acc = evaluate_model(model, test_loader, train_dataset.classes,
+                                         DEVICE, model_name, plots_dir)
+                results[model_name] = {
+                    'best_val_acc': checkpoint.get('val_acc', 0.0),
+                    'test_acc': test_acc
+                }
+                continue
+
         # Create model
         model = create_model(model_name, num_classes=num_classes)
         model = model.to(DEVICE)
         
-        # Loss and optimizer
-        criterion = nn.CrossEntropyLoss()
-        optimizer = optim.Adam(model.parameters(), lr=LEARNING_RATE, weight_decay=1e-4)
-        scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='min', 
-                                                         factor=0.5, patience=5)
+        # Loss with label smoothing for better generalization
+        criterion = nn.CrossEntropyLoss(label_smoothing=LABEL_SMOOTHING)
         
-        # Create checkpoint directory
-        model_checkpoint_dir = checkpoints_dir / model_name
-        model_checkpoint_dir.mkdir(exist_ok=True)
+        # Optimizer with weight decay
+        optimizer = optim.AdamW(model.parameters(), lr=LEARNING_RATE, weight_decay=WEIGHT_DECAY)
+        
+        # Cosine Annealing with Warm Restarts for better convergence
+        scheduler = optim.lr_scheduler.CosineAnnealingWarmRestarts(
+            optimizer, T_0=10, T_mult=2, eta_min=1e-6
+        )
         
         # Train
         trainer = Trainer(model, train_loader, val_loader, criterion, optimizer,
-                         scheduler, DEVICE, model_checkpoint_dir, model_name)
+                  scheduler, DEVICE, model_checkpoint_dir, model_name)
         history = trainer.train(NUM_EPOCHS)
         
         # Plot history

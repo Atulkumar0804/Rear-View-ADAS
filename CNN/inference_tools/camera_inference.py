@@ -3,7 +3,7 @@ Real-time Camera Inference for Vehicle Detection
 Simplified version for easy camera-based predictions
 
 Usage:
-    # Using best model (transfer_resnet18)
+    # Using best model (mobilenet_inspired)
     python camera_inference.py
     
     # Using specific model
@@ -33,30 +33,84 @@ import os
 
 # Get absolute path to YOLO model
 SCRIPT_DIR = Path(__file__).parent.resolve()
-PROJECT_ROOT = SCRIPT_DIR.parent.parent
-YOLO_MODEL_PATH = str(PROJECT_ROOT / "CNN" / "models" / "yolo" / "yolov8n_RearView.pt")
+CNN_DIR = SCRIPT_DIR.parent
+PROJECT_ROOT = CNN_DIR.parent
+# Use YOLOv11 from project root
+YOLO_MODEL_PATH = str(PROJECT_ROOT / "yolo11s.pt")
 
 # Configuration
 IMG_SIZE = (224, 224)
 CONFIDENCE_THRESHOLD = 0.4
 
-# Vehicle classes
-VEHICLE_CLASSES = ['car', 'truck', 'bus', 'person']
+# Camera parameters (typical rear-view camera)
+FOCAL_LENGTH = 1000  # pixels (approximate)
 
-# YOLO class mapping
-YOLO_CLASS_MAPPING = {
-    0: 'person',
-    2: 'car',
-    5: 'bus',
-    7: 'truck'
+# Real-world heights for distance estimation (in meters)
+REAL_HEIGHTS = {
+    'Hatchback': 1.5,        # Average hatchback height
+    'Sedan': 1.5,            # Average sedan height
+    'SUV': 1.8,              # SUVs are taller
+    'MUV': 1.9,              # Multi-utility vehicles
+    'Bus': 3.2,              # Standard bus height
+    'Truck': 3.0,            # Commercial truck height
+    'Three-wheeler': 1.6,    # Auto-rickshaw height
+    'Two-wheeler': 1.3,      # Motorcycle/scooter with rider
+    'LCV': 2.2,              # Light commercial vehicle
+    'Mini-bus': 2.5,         # Compact bus
+    'Tempo-traveller': 2.4,  # Passenger van
+    'Bicycle': 1.2,          # Bicycle with rider
+    'Van': 2.0,              # Delivery van
+    'Other': 1.5,            # Default estimate
+    'Person': 1.7            # Average human height
 }
 
-# Color mapping
+# Vehicle classes - 15 classes matching the trained CNN model
+# Based on mobilenet_inspired checkpoint (15 output classes)
+VEHICLE_CLASSES = [
+    'Hatchback',        # 0: Small passenger cars without protruding rear boot
+    'Sedan',            # 1: Passenger cars with separate protruding rear boot
+    'SUV',              # 2: High ground clearance vehicles
+    'MUV',              # 3: Large vehicles with three seating rows
+    'Bus',              # 4: Large passenger vehicles
+    'Truck',            # 5: Heavy goods carriers
+    'Three-wheeler',    # 6: Compact vehicles with covered passenger cabin
+    'Two-wheeler',      # 7: Motorbikes and scooters
+    'LCV',              # 8: Light Commercial Vehicles
+    'Mini-bus',         # 9: Compact buses
+    'Tempo-traveller',  # 10: Medium-sized passenger vans
+    'Bicycle',          # 11: Non-motorized pedalled vehicles
+    'Van',              # 12: Medium-sized goods/people transport
+    'Other',            # 13: Agricultural, specialized vehicles
+    'Person'            # 14: Pedestrians
+]
+
+# YOLO class mapping (map YOLO COCO classes to our CNN classes)
+YOLO_CLASS_MAPPING = {
+    0: 'Person',         # YOLO person -> Person
+    1: 'Bicycle',        # YOLO bicycle -> Bicycle
+    2: 'Hatchback',      # YOLO car -> Hatchback (will be refined by CNN)
+    3: 'Two-wheeler',    # YOLO motorcycle -> Two-wheeler
+    5: 'Bus',            # YOLO bus -> Bus
+    7: 'Truck',          # YOLO truck -> Truck
+}
+
+# Color mapping for all 15 classes
 CLASS_COLORS = {
-    'car': (0, 255, 0),       # Green
-    'truck': (255, 165, 0),   # Orange
-    'bus': (0, 165, 255),     # Blue
-    'person': (255, 0, 255),  # Magenta
+    'Hatchback': (0, 255, 0),        # Green
+    'Sedan': (0, 255, 127),          # Spring Green
+    'SUV': (0, 255, 255),            # Cyan
+    'MUV': (127, 255, 0),            # Chartreuse
+    'Bus': (0, 165, 255),            # Orange-Blue
+    'Truck': (255, 165, 0),          # Orange
+    'Three-wheeler': (255, 255, 0),  # Yellow
+    'Two-wheeler': (255, 0, 127),    # Deep Pink
+    'LCV': (255, 127, 80),           # Coral
+    'Mini-bus': (138, 43, 226),      # Blue Violet
+    'Tempo-traveller': (147, 112, 219), # Medium Purple
+    'Bicycle': (255, 192, 203),      # Pink
+    'Van': (255, 140, 0),            # Dark Orange
+    'Other': (128, 128, 128),        # Gray
+    'Person': (255, 0, 255),         # Magenta
 }
 
 # CNN Transform
@@ -94,226 +148,309 @@ class CameraVehicleDetector:
         print("✅ CNN loaded")
         print(f"   Classes: {VEHICLE_CLASSES}\n")
         
-        # Tracking
-        self.prev_detections = {}
+        # Tracking history for velocity estimation
+        self.prev_distances = {}  # track_id -> [distances over time]
         self.track_id_counter = 0
+        self.prev_boxes = []
+        # Track class history for smoothing (track_id -> deque of (class, conf))
+        from collections import deque, defaultdict
+        self.track_classes = defaultdict(lambda: deque(maxlen=5))
+        # Minimum IoU to consider same track (increase to reduce ID switches)
+        self.IOU_THRESHOLD = 0.45
+        # Minimum crop area to run CNN classification (avoid tiny noisy crops)
+        self.MIN_CROP_AREA = 64 * 64  # pixels
         
-    def classify_crop(self, crop):
-        """Classify vehicle crop with CNN"""
-        if crop.size == 0 or crop.shape[0] < 10 or crop.shape[1] < 10:
-            return None, 0.0
+    def match_detections(self, current_boxes, prev_boxes, iou_threshold=0.3):
+        """Match current detections with previous ones using IoU"""
+        if not prev_boxes:
+            return [-1] * len(current_boxes)
         
-        try:
-            # Resize and transform
-            crop_resized = cv2.resize(crop, IMG_SIZE)
-            crop_rgb = cv2.cvtColor(crop_resized, cv2.COLOR_BGR2RGB)
-            crop_tensor = transform(crop_rgb).unsqueeze(0).to(self.device)
+        matches = []
+        for curr_box in current_boxes:
+            best_iou = 0
+            best_idx = -1
             
-            # Predict
-            with torch.no_grad():
-                outputs = self.cnn_model(crop_tensor)
-                probs = torch.softmax(outputs, dim=1)
-                conf, pred = torch.max(probs, 1)
+            for i, prev_box in enumerate(prev_boxes):
+                iou = self.calculate_iou(curr_box, prev_box['bbox'])
+                if iou > best_iou and iou > iou_threshold:
+                    best_iou = iou
+                    best_idx = prev_box.get('track_id', -1)
             
-            return VEHICLE_CLASSES[pred.item()], conf.item()
-        except Exception as e:
-            return None, 0.0
+            matches.append(best_idx)
+        
+        return matches
     
-    def compute_iou(self, box1, box2):
-        """Compute IoU"""
-        x1 = max(box1[0], box2[0])
-        y1 = max(box1[1], box2[1])
-        x2 = min(box1[2], box2[2])
-        y2 = min(box1[3], box2[3])
+    def calculate_iou(self, box1, box2):
+        """Calculate Intersection over Union"""
+        x1_1, y1_1, x2_1, y2_1 = box1
+        x1_2, y1_2, x2_2, y2_2 = box2
         
-        if x2 < x1 or y2 < y1:
-            return 0.0
+        xi1 = max(x1_1, x1_2)
+        yi1 = max(y1_1, y1_2)
+        xi2 = min(x2_1, x2_2)
+        yi2 = min(y2_1, y2_2)
         
-        inter = (x2 - x1) * (y2 - y1)
-        area1 = (box1[2] - box1[0]) * (box1[3] - box1[1])
-        area2 = (box2[2] - box2[0]) * (box2[3] - box2[1])
-        union = area1 + area2 - inter
+        inter_area = max(0, xi2 - xi1) * max(0, yi2 - yi1)
+        box1_area = (x2_1 - x1_1) * (y2_1 - y1_1)
+        box2_area = (x2_2 - x1_2) * (y2_2 - y1_2)
+        union_area = box1_area + box2_area - inter_area
         
-        return inter / union if union > 0 else 0.0
+        return inter_area / union_area if union_area > 0 else 0
     
-    def detect_and_track(self, frame):
-        """Detect vehicles and track them"""
-        detections = []
+    def estimate_motion(self, track_id, current_distance):
+        """Estimate if object is approaching, stable, or receding"""
+        if track_id not in self.prev_distances:
+            self.prev_distances[track_id] = []
+        
+        self.prev_distances[track_id].append(current_distance)
+        
+        # Keep last 30 frames (approx 1 second) for smoother estimation
+        if len(self.prev_distances[track_id]) > 30:
+            self.prev_distances[track_id].pop(0)
+        
+        # Need at least 15 frames to estimate reliably
+        if len(self.prev_distances[track_id]) < 15:
+            return "stable"
+        
+        # Calculate trend using robust averaging
+        distances = self.prev_distances[track_id]
+        time_steps = len(distances) - 1
+        if time_steps == 0: return "stable"
+        
+        # Use average of recent vs old frames to reduce noise
+        # Compare average of last 5 frames vs average of first 5 frames
+        window = 5
+        if len(distances) < window * 2:
+            # Fallback for shorter history
+            avg_change = (distances[-1] - distances[0]) / time_steps
+        else:
+            recent_avg = sum(distances[-window:]) / window
+            old_avg = sum(distances[:window]) / window
+            # Effective time difference is total length minus average offset of the two windows
+            effective_steps = len(distances) - window 
+            avg_change = (recent_avg - old_avg) / effective_steps
+        
+        # Threshold for motion detection (meters per frame)
+        # 0.03 m/frame * 30 fps = ~1 m/s = 3.6 km/h
+        threshold = 0.03
+        
+        if avg_change < -threshold:  # Getting closer
+            return "approaching"
+        elif avg_change > threshold:  # Getting farther
+            return "receding"
+        else:
+            return "stable"
+
+    def estimate_distance(self, bbox_height, class_name):
+        """Estimate distance based on bounding box height"""
+        if bbox_height <= 0:
+            return None
+        
+        # Get real-world height based on class
+        real_height = REAL_HEIGHTS.get(class_name, 1.5)  # Default to car height
+        
+        # Distance = (Real Height × Focal Length) / Pixel Height
+        distance = (real_height * FOCAL_LENGTH) / bbox_height
+        
+        return distance
+    
+    def detect_frame(self, frame):
+        """Detect vehicles in a single frame with tracking"""
+        results = []
+        current_boxes_raw = []
         
         # YOLO detection
-        results = self.yolo_model(frame, conf=CONFIDENCE_THRESHOLD, verbose=False)
+        yolo_results = self.yolo_model(frame, verbose=False)[0]
         
-        for result in results:
-            if result.boxes is None:
+        for detection in yolo_results.boxes.data:
+            x1, y1, x2, y2, conf, cls_id = detection.cpu().numpy()
+            cls_id = int(cls_id)
+            
+            if cls_id not in YOLO_CLASS_MAPPING:
                 continue
             
-            for box in result.boxes:
-                cls_id = int(box.cls[0])
-                
-                if cls_id not in YOLO_CLASS_MAPPING:
-                    continue
-                
-                # Get bbox
-                x1, y1, x2, y2 = map(int, box.xyxy[0].cpu().numpy())
-                
-                # Filter small boxes
-                if (x2 - x1) * (y2 - y1) < 1500:
-                    continue
-                
-                yolo_conf = float(box.conf[0])
-                yolo_class = YOLO_CLASS_MAPPING[cls_id]
-                
+            yolo_class = YOLO_CLASS_MAPPING[cls_id]
+            
+            # For persons, trust YOLO (shape-based detection is better)
+            if yolo_class == 'person':
+                if conf >= CONFIDENCE_THRESHOLD:
+                    current_boxes_raw.append([int(x1), int(y1), int(x2), int(y2)])
+                    results.append({
+                        'bbox': [int(x1), int(y1), int(x2), int(y2)],
+                        'class': 'person',
+                        'confidence': float(conf),
+                        'source': 'YOLO'
+                    })
+                continue
+            
+            # For vehicles, refine with CNN
+            if conf >= CONFIDENCE_THRESHOLD:
                 # Crop and classify with CNN
+                x1, y1, x2, y2 = int(x1), int(y1), int(x2), int(y2)
                 crop = frame[y1:y2, x1:x2]
-                cnn_class, cnn_conf = self.classify_crop(crop)
                 
-                # Smart fusion: Trust YOLO for person detection, use CNN for vehicle refinement
-                if yolo_class == 'person':
-                    # YOLO is very good at detecting persons, trust it
-                    # Only override if CNN also says person with high confidence
-                    if cnn_class == 'person' and cnn_conf > 0.7:
-                        final_class = 'person'
-                        final_conf = (yolo_conf + cnn_conf) / 2
-                    else:
-                        # Trust YOLO for person detection
-                        final_class = 'person'
-                        final_conf = yolo_conf
-                else:
-                    # For vehicles, use CNN to refine classification
-                    if cnn_class and cnn_conf > 0.6:
-                        # CNN is confident, but check consistency
-                        if cnn_class == 'person' and yolo_class in ['car', 'truck', 'bus']:
-                            # CNN says person but YOLO says vehicle - trust YOLO
-                            final_class = yolo_class
-                            final_conf = yolo_conf
-                        else:
-                            # Use CNN classification
-                            final_class = cnn_class
-                            final_conf = (yolo_conf + cnn_conf) / 2
-                    else:
-                        # CNN not confident, use YOLO
+                if crop.size > 0:
+                    # Skip CNN on very small crops to avoid noisy predictions
+                    crop_area = crop.shape[0] * crop.shape[1]
+                    if crop_area < self.MIN_CROP_AREA:
                         final_class = yolo_class
-                        final_conf = yolo_conf
-                
-                detections.append({
-                    'bbox': [x1, y1, x2, y2],
-                    'class': final_class,
-                    'confidence': final_conf,
-                    'yolo_class': yolo_class,
-                    'cnn_class': cnn_class,
-                    'cnn_conf': cnn_conf,
-                })
+                        final_conf = float(conf)
+                        source = 'YOLO_small'
+                    else:
+                        # Preprocess
+                        crop_resized = cv2.resize(crop, IMG_SIZE)
+                        crop_rgb = cv2.cvtColor(crop_resized, cv2.COLOR_BGR2RGB)
+                        tensor = transform(crop_rgb).unsqueeze(0).to(self.device)
+                        
+                        # CNN prediction
+                        with torch.no_grad():
+                            output = self.cnn_model(tensor)
+                            probs = torch.softmax(output, dim=1)[0]
+                            cnn_conf, cnn_pred = torch.max(probs, 0)
+                            cnn_class = VEHICLE_CLASSES[cnn_pred.item()]
+
+                        # Use CNN class if confidence is high enough, otherwise keep YOLO class
+                        if cnn_conf >= 0.65:
+                            final_class = cnn_class
+                            final_conf = float(cnn_conf)
+                            source = 'CNN'
+                        else:
+                            final_class = yolo_class
+                            final_conf = float(conf)
+                            source = 'YOLO'
+
+                    current_boxes_raw.append([x1, y1, x2, y2])
+                    results.append({
+                        'bbox': [x1, y1, x2, y2],
+                        'class': final_class,
+                        'confidence': final_conf,
+                        'source': source
+                    })
         
-        # Track vehicles
-        tracked = []
+        # Match with previous detections for tracking (use slightly higher IOU)
+        matches = self.match_detections(current_boxes_raw, self.prev_boxes, iou_threshold=self.IOU_THRESHOLD)
         
-        for det in detections:
-            best_iou = 0
-            best_track_id = None
+        # Assign track IDs and estimate motion
+        for i, result in enumerate(results):
+            bbox_height = result['bbox'][3] - result['bbox'][1]
+            distance = self.estimate_distance(bbox_height, result['class'])
             
-            # Match with previous frame
-            for track_id, prev_det in self.prev_detections.items():
-                if prev_det['class'] != det['class']:
-                    continue
-                
-                iou = self.compute_iou(det['bbox'], prev_det['bbox'])
-                if iou > 0.3 and iou > best_iou:
-                    best_iou = iou
-                    best_track_id = track_id
-            
-            if best_track_id is not None:
-                # Matched - compute distance change
-                prev_area = (self.prev_detections[best_track_id]['bbox'][2] - 
-                           self.prev_detections[best_track_id]['bbox'][0]) * \
-                          (self.prev_detections[best_track_id]['bbox'][3] - 
-                           self.prev_detections[best_track_id]['bbox'][1])
-                
-                curr_area = (det['bbox'][2] - det['bbox'][0]) * \
-                           (det['bbox'][3] - det['bbox'][1])
-                
-                area_change = (curr_area - prev_area) / prev_area if prev_area > 0 else 0
-                
-                if area_change > 0.15:
-                    status = 'APPROACHING'
-                    color = (0, 0, 255)  # Red
-                elif area_change < -0.15:
-                    status = 'RECEDING'
-                    color = (0, 255, 255)  # Yellow
-                else:
-                    status = 'STABLE'
-                    color = (0, 255, 0)  # Green
-                
-                det['track_id'] = best_track_id
-                det['status'] = status
-                det['status_color'] = color
-            else:
+            # Assign track ID
+            if matches[i] == -1:
                 # New detection
-                det['track_id'] = self.track_id_counter
-                det['status'] = 'NEW'
-                det['status_color'] = (255, 255, 255)  # White
+                track_id = self.track_id_counter
                 self.track_id_counter += 1
+            else:
+                track_id = matches[i]
             
-            tracked.append(det)
+            result['track_id'] = track_id
+            result['distance'] = distance
+            
+            # Estimate motion
+            if distance:
+                motion = self.estimate_motion(track_id, distance)
+                result['motion'] = motion
+            else:
+                result['motion'] = "unknown"
+
+            # --- Per-track class smoothing ---
+            # Maintain history of predicted classes for the track and compute weighted vote
+            cls = result['class']
+            conf_val = float(result.get('confidence', 0.0))
+            # append to history
+            self.track_classes[track_id].append((cls, conf_val))
+
+            # Weighted vote across history
+            votes = {}
+            for c, cconf in self.track_classes[track_id]:
+                votes.setdefault(c, 0.0)
+                votes[c] += cconf
+
+            # Pick class with highest accumulated confidence
+            if votes:
+                stable_class = max(votes.items(), key=lambda x: x[1])[0]
+                stable_conf = votes[stable_class] / len(self.track_classes[track_id])
+                # If stable class differs from current but previous history strongly prefers previous, keep stable
+                result['class'] = stable_class
+                result['confidence'] = float(min(1.0, stable_conf))
         
-        # Update tracking
-        self.prev_detections = {det['track_id']: det for det in tracked}
+        # Update prev_boxes for next frame
+        self.prev_boxes = [{'bbox': r['bbox'], 'track_id': r['track_id']} for r in results]
         
-        return tracked
+        return results
     
-    def draw_detections(self, frame, detections, fps=0, debug=False):
-        """Draw bounding boxes and labels"""
+    def draw_detections(self, frame, detections, fps=None, debug=False):
+        """Draw bounding boxes and labels with distance and motion state"""
         annotated = frame.copy()
         
         for det in detections:
             x1, y1, x2, y2 = det['bbox']
             class_name = det['class']
-            conf = det['confidence']
-            status = det.get('status', 'NEW')
-            status_color = det.get('status_color', (255, 255, 255))
+            confidence = det['confidence']
+            distance = det.get('distance', None)
+            motion = det.get('motion', 'unknown')
             
-            # Get debug info
-            yolo_class = det.get('yolo_class', '')
-            cnn_class = det.get('cnn_class', '')
-            cnn_conf = det.get('cnn_conf', 0.0)
-            
-            # Draw bounding box
+            # Get base color for class
             color = CLASS_COLORS.get(class_name, (255, 255, 255))
-            cv2.rectangle(annotated, (x1, y1), (x2, y2), color, 2)
             
-            # Draw label
-            label = f"{class_name}: {conf:.2f}"
-            (label_w, label_h), _ = cv2.getTextSize(label, cv2.FONT_HERSHEY_SIMPLEX, 0.6, 2)
-            cv2.rectangle(annotated, (x1, y1 - label_h - 10), (x1 + label_w, y1), color, -1)
+            # Choose motion-based color for box border
+            motion_colors = {
+                'approaching': (0, 0, 255),    # Red - Warning!
+                'receding': (0, 255, 255),     # Yellow - Moving away
+                'stable': (0, 255, 0),         # Green - Safe
+                'unknown': color                # Default class color
+            }
+            box_color = motion_colors.get(motion, color)
+            
+            # Draw box with motion-based color
+            cv2.rectangle(annotated, (x1, y1), (x2, y2), box_color, 2)
+            
+            # Draw label with distance
+            if distance:
+                label = f"{class_name}: {confidence:.2f} | {distance:.1f}m"
+            else:
+                label = f"{class_name}: {confidence:.2f}"
+            
+            label_size, _ = cv2.getTextSize(label, cv2.FONT_HERSHEY_SIMPLEX, 0.5, 2)
+            cv2.rectangle(annotated, (x1, y1 - label_size[1] - 10), 
+                         (x1 + label_size[0], y1), box_color, -1)
             cv2.putText(annotated, label, (x1, y1 - 5), 
-                       cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 0, 0), 2)
+                       cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0), 2)
             
-            # Draw debug info if enabled
-            if debug and yolo_class and cnn_class:
-                debug_label = f"Y:{yolo_class} C:{cnn_class}({cnn_conf:.2f})"
-                cv2.putText(annotated, debug_label, (x1, y1 - 25),
-                           cv2.FONT_HERSHEY_SIMPLEX, 0.4, (255, 255, 0), 1)
+            # Draw distance below box (larger text)
+            if distance:
+                dist_text = f"{distance:.1f}m"
+                dist_size, _ = cv2.getTextSize(dist_text, cv2.FONT_HERSHEY_SIMPLEX, 0.8, 2)
+                cv2.rectangle(annotated, (x1, y2), 
+                             (x1 + dist_size[0] + 10, y2 + dist_size[1] + 10), box_color, -1)
+                cv2.putText(annotated, dist_text, (x1 + 5, y2 + dist_size[1] + 5), 
+                           cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 0, 0), 2)
             
-            # Draw distance status
-            if status != 'NEW':
-                status_label = f"[{status}]"
-                cv2.putText(annotated, status_label, (x1, y2 + 20),
-                           cv2.FONT_HERSHEY_SIMPLEX, 0.5, status_color, 2)
+            # Draw motion state on the right side of box
+            if motion != 'unknown':
+                motion_text = motion.upper()
+                motion_size, _ = cv2.getTextSize(motion_text, cv2.FONT_HERSHEY_SIMPLEX, 0.6, 2)
+                motion_x = x2 - motion_size[0] - 10
+                motion_y = y1 + 25
+                cv2.rectangle(annotated, (motion_x - 5, motion_y - motion_size[1] - 5), 
+                             (x2 - 5, motion_y + 5), box_color, -1)
+                cv2.putText(annotated, motion_text, (motion_x, motion_y), 
+                           cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 2)
         
-        # Draw FPS and vehicle count
-        info_y = 30
-        cv2.putText(annotated, f"FPS: {fps:.1f}", (10, info_y),
-                   cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
-        
-        cv2.putText(annotated, f"Vehicles: {len(detections)}", (10, info_y + 30),
-                   cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
+        # Draw FPS if provided
+        if fps:
+            fps_text = f"FPS: {fps:.1f}"
+            cv2.putText(annotated, fps_text, (10, 30), 
+                       cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
         
         return annotated
+
 
 
 def main():
     parser = argparse.ArgumentParser(description='Real-time Camera Vehicle Detection')
     parser.add_argument('--model', type=str, 
-                       default='checkpoints/transfer_resnet18/best_model.pth',
+                       default='checkpoints/mobilenet_inspired/best_model.pth',
                        help='Path to CNN model checkpoint')
     parser.add_argument('--camera', type=str, default='0', 
                        help='Camera device ID or video file path (default: 0)')
@@ -421,7 +558,7 @@ def main():
             frame_count += 1
             
             # Detect and track
-            detections = detector.detect_and_track(frame)
+            detections = detector.detect_frame(frame)
             
             # Calculate FPS
             elapsed = time.time() - start_time

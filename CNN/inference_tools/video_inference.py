@@ -24,7 +24,9 @@ from ultralytics import YOLO
 # Get absolute path to YOLO model
 SCRIPT_DIR = Path(__file__).parent.resolve()
 CNN_DIR = SCRIPT_DIR.parent
-YOLO_MODEL_PATH = str(CNN_DIR / "models" / "yolo" / "yolov8n_RearView.pt")
+PROJECT_ROOT = CNN_DIR.parent
+# Use YOLOv11 from project root
+YOLO_MODEL_PATH = str(PROJECT_ROOT / "yolo11s.pt")
 
 # Configuration
 IMG_SIZE = (224, 224)
@@ -32,28 +34,73 @@ CONFIDENCE_THRESHOLD = 0.4
 
 # Camera parameters (typical rear-view camera)
 FOCAL_LENGTH = 1000  # pixels (approximate)
-REAL_HEIGHT_CAR = 1.5  # meters (average car height)
-REAL_HEIGHT_TRUCK = 3.0  # meters
-REAL_HEIGHT_BUS = 3.2  # meters
-REAL_HEIGHT_PERSON = 1.7  # meters
 
-# Vehicle classes
-VEHICLE_CLASSES = ['car', 'truck', 'bus', 'person']
-
-# YOLO class mapping
-YOLO_CLASS_MAPPING = {
-    0: 'person',
-    2: 'car',
-    5: 'bus',
-    7: 'truck'
+# Real-world heights for distance estimation (in meters)
+REAL_HEIGHTS = {
+    'Hatchback': 1.5,        # Average hatchback height
+    'Sedan': 1.5,            # Average sedan height
+    'SUV': 1.8,              # SUVs are taller
+    'MUV': 1.9,              # Multi-utility vehicles
+    'Bus': 3.2,              # Standard bus height
+    'Truck': 3.0,            # Commercial truck height
+    'Three-wheeler': 1.6,    # Auto-rickshaw height
+    'Two-wheeler': 1.3,      # Motorcycle/scooter with rider
+    'LCV': 2.2,              # Light commercial vehicle
+    'Mini-bus': 2.5,         # Compact bus
+    'Tempo-traveller': 2.4,  # Passenger van
+    'Bicycle': 1.2,          # Bicycle with rider
+    'Van': 2.0,              # Delivery van
+    'Other': 1.5,            # Default estimate
+    'Person': 1.7            # Average human height
 }
 
-# Color mapping
+# Vehicle classes - 15 classes matching the trained CNN model
+# Based on mobilenet_inspired checkpoint (15 output classes)
+VEHICLE_CLASSES = [
+    'Hatchback',        # 0: Small passenger cars without protruding rear boot
+    'Sedan',            # 1: Passenger cars with separate protruding rear boot
+    'SUV',              # 2: High ground clearance vehicles
+    'MUV',              # 3: Large vehicles with three seating rows
+    'Bus',              # 4: Large passenger vehicles
+    'Truck',            # 5: Heavy goods carriers
+    'Three-wheeler',    # 6: Compact vehicles with covered passenger cabin
+    'Two-wheeler',      # 7: Motorbikes and scooters
+    'LCV',              # 8: Light Commercial Vehicles
+    'Mini-bus',         # 9: Compact buses
+    'Tempo-traveller',  # 10: Medium-sized passenger vans
+    'Bicycle',          # 11: Non-motorized pedalled vehicles
+    'Van',              # 12: Medium-sized goods/people transport
+    'Other',            # 13: Agricultural, specialized vehicles
+    'Person'            # 14: Pedestrians
+]
+
+# YOLO class mapping (map YOLO COCO classes to our CNN classes)
+YOLO_CLASS_MAPPING = {
+    0: 'Person',         # YOLO person -> Person
+    1: 'Bicycle',        # YOLO bicycle -> Bicycle
+    2: 'Hatchback',      # YOLO car -> Hatchback (will be refined by CNN)
+    3: 'Two-wheeler',    # YOLO motorcycle -> Two-wheeler
+    5: 'Bus',            # YOLO bus -> Bus
+    7: 'Truck',          # YOLO truck -> Truck
+}
+
+# Color mapping for all 15 classes
 CLASS_COLORS = {
-    'car': (0, 255, 0),       # Green
-    'truck': (255, 165, 0),   # Orange
-    'bus': (0, 165, 255),     # Blue
-    'person': (255, 0, 255),  # Magenta
+    'Hatchback': (0, 255, 0),        # Green
+    'Sedan': (0, 255, 127),          # Spring Green
+    'SUV': (0, 255, 255),            # Cyan
+    'MUV': (127, 255, 0),            # Chartreuse
+    'Bus': (0, 165, 255),            # Orange-Blue
+    'Truck': (255, 165, 0),          # Orange
+    'Three-wheeler': (255, 255, 0),  # Yellow
+    'Two-wheeler': (255, 0, 127),    # Deep Pink
+    'LCV': (255, 127, 80),           # Coral
+    'Mini-bus': (138, 43, 226),      # Blue Violet
+    'Tempo-traveller': (147, 112, 219), # Medium Purple
+    'Bicycle': (255, 192, 203),      # Pink
+    'Van': (255, 140, 0),            # Dark Orange
+    'Other': (128, 128, 128),        # Gray
+    'Person': (255, 0, 255),         # Magenta
 }
 
 # CNN Transform
@@ -94,6 +141,13 @@ class VideoDetector:
         self.prev_distances = {}  # track_id -> [distances over time]
         self.track_id_counter = 0
         self.prev_boxes = []
+        # Track class history for smoothing (track_id -> deque of (class, conf))
+        from collections import deque, defaultdict
+        self.track_classes = defaultdict(lambda: deque(maxlen=5))
+        # Minimum IoU to consider same track (increase to reduce ID switches)
+        self.IOU_THRESHOLD = 0.45
+        # Minimum crop area to run CNN classification (avoid tiny noisy crops)
+        self.MIN_CROP_AREA = 64 * 64  # pixels
     
     def match_detections(self, current_boxes, prev_boxes, iou_threshold=0.3):
         """Match current detections with previous ones using IoU"""
@@ -139,22 +193,39 @@ class VideoDetector:
         
         self.prev_distances[track_id].append(current_distance)
         
-        # Keep only last 10 frames
-        if len(self.prev_distances[track_id]) > 10:
+        # Keep last 30 frames (approx 1 second) for smoother estimation
+        if len(self.prev_distances[track_id]) > 30:
             self.prev_distances[track_id].pop(0)
         
-        # Need at least 5 frames to estimate
-        if len(self.prev_distances[track_id]) < 5:
+        # Need at least 15 frames to estimate reliably
+        if len(self.prev_distances[track_id]) < 15:
             return "stable"
         
-        # Calculate trend
+        # Calculate trend using robust averaging
         distances = self.prev_distances[track_id]
-        avg_change = (distances[-1] - distances[0]) / len(distances)
+        time_steps = len(distances) - 1
+        if time_steps == 0: return "stable"
+        
+        # Use average of recent vs old frames to reduce noise
+        # Compare average of last 5 frames vs average of first 5 frames
+        window = 5
+        if len(distances) < window * 2:
+            # Fallback for shorter history
+            avg_change = (distances[-1] - distances[0]) / time_steps
+        else:
+            recent_avg = sum(distances[-window:]) / window
+            old_avg = sum(distances[:window]) / window
+            # Effective time difference is total length minus average offset of the two windows
+            effective_steps = len(distances) - window 
+            avg_change = (recent_avg - old_avg) / effective_steps
         
         # Threshold for motion detection (meters per frame)
-        if avg_change < -0.3:  # Getting closer
+        # 0.03 m/frame * 30 fps = ~1 m/s = 3.6 km/h
+        threshold = 0.03
+        
+        if avg_change < -threshold:  # Getting closer
             return "approaching"
-        elif avg_change > 0.3:  # Getting farther
+        elif avg_change > threshold:  # Getting farther
             return "receding"
         else:
             return "stable"
@@ -195,32 +266,45 @@ class VideoDetector:
                 crop = frame[y1:y2, x1:x2]
                 
                 if crop.size > 0:
-                    # Preprocess
-                    crop_resized = cv2.resize(crop, IMG_SIZE)
-                    crop_rgb = cv2.cvtColor(crop_resized, cv2.COLOR_BGR2RGB)
-                    tensor = transform(crop_rgb).unsqueeze(0).to(self.device)
-                    
-                    # CNN prediction
-                    with torch.no_grad():
-                        output = self.cnn(tensor)
-                        probs = torch.softmax(output, dim=1)[0]
-                        cnn_conf, cnn_pred = torch.max(probs, 0)
-                        cnn_class = VEHICLE_CLASSES[cnn_pred.item()]
-                    
-                    # Use CNN class if confidence is high
-                    final_class = cnn_class if cnn_conf >= 0.6 else yolo_class
-                    final_conf = float(cnn_conf) if cnn_conf >= 0.6 else float(conf)
-                    
+                    # Skip CNN on very small crops to avoid noisy predictions
+                    crop_area = crop.shape[0] * crop.shape[1]
+                    if crop_area < self.MIN_CROP_AREA:
+                        final_class = yolo_class
+                        final_conf = float(conf)
+                        source = 'YOLO_small'
+                    else:
+                        # Preprocess
+                        crop_resized = cv2.resize(crop, IMG_SIZE)
+                        crop_rgb = cv2.cvtColor(crop_resized, cv2.COLOR_BGR2RGB)
+                        tensor = transform(crop_rgb).unsqueeze(0).to(self.device)
+                        
+                        # CNN prediction
+                        with torch.no_grad():
+                            output = self.cnn(tensor)
+                            probs = torch.softmax(output, dim=1)[0]
+                            cnn_conf, cnn_pred = torch.max(probs, 0)
+                            cnn_class = VEHICLE_CLASSES[cnn_pred.item()]
+
+                        # Use CNN class if confidence is high enough, otherwise keep YOLO class
+                        if cnn_conf >= 0.65:
+                            final_class = cnn_class
+                            final_conf = float(cnn_conf)
+                            source = 'CNN'
+                        else:
+                            final_class = yolo_class
+                            final_conf = float(conf)
+                            source = 'YOLO'
+
                     current_boxes_raw.append([x1, y1, x2, y2])
                     results.append({
                         'bbox': [x1, y1, x2, y2],
                         'class': final_class,
                         'confidence': final_conf,
-                        'source': 'CNN' if cnn_conf >= 0.6 else 'YOLO'
+                        'source': source
                     })
         
-        # Match with previous detections for tracking
-        matches = self.match_detections(current_boxes_raw, self.prev_boxes)
+        # Match with previous detections for tracking (use slightly higher IOU)
+        matches = self.match_detections(current_boxes_raw, self.prev_boxes, iou_threshold=self.IOU_THRESHOLD)
         
         # Assign track IDs and estimate motion
         for i, result in enumerate(results):
@@ -244,6 +328,27 @@ class VideoDetector:
                 result['motion'] = motion
             else:
                 result['motion'] = "unknown"
+
+            # --- Per-track class smoothing ---
+            # Maintain history of predicted classes for the track and compute weighted vote
+            cls = result['class']
+            conf_val = float(result.get('confidence', 0.0))
+            # append to history
+            self.track_classes[track_id].append((cls, conf_val))
+
+            # Weighted vote across history
+            votes = {}
+            for c, cconf in self.track_classes[track_id]:
+                votes.setdefault(c, 0.0)
+                votes[c] += cconf
+
+            # Pick class with highest accumulated confidence
+            if votes:
+                stable_class = max(votes.items(), key=lambda x: x[1])[0]
+                stable_conf = votes[stable_class] / len(self.track_classes[track_id])
+                # If stable class differs from current but previous history strongly prefers previous, keep stable
+                result['class'] = stable_class
+                result['confidence'] = float(min(1.0, stable_conf))
         
         # Update prev_boxes for next frame
         self.prev_boxes = [{'bbox': r['bbox'], 'track_id': r['track_id']} for r in results]
@@ -256,14 +361,7 @@ class VideoDetector:
             return None
         
         # Get real-world height based on class
-        real_heights = {
-            'car': REAL_HEIGHT_CAR,
-            'truck': REAL_HEIGHT_TRUCK,
-            'bus': REAL_HEIGHT_BUS,
-            'person': REAL_HEIGHT_PERSON
-        }
-        
-        real_height = real_heights.get(class_name, REAL_HEIGHT_CAR)
+        real_height = REAL_HEIGHTS.get(class_name, 1.5)  # Default to car height
         
         # Distance = (Real Height × Focal Length) / Pixel Height
         distance = (real_height * FOCAL_LENGTH) / bbox_height
@@ -395,7 +493,8 @@ def process_video(input_path, output_path, model_path, device='cuda'):
         processing_fps = frame_count / elapsed if elapsed > 0 else 0
         
         # Annotate
-        annotated = detector.draw_detections(frame, detections, processing_fps)
+        # Use video FPS for display so it matches the video speed, not processing speed
+        annotated = detector.draw_detections(frame, detections, fps)
         
         # Write
         writer.write(annotated)
@@ -440,7 +539,7 @@ def main():
     parser.add_argument('--output', '-o', type=str, required=True,
                        help='Output video file')
     parser.add_argument('--model', type=str,
-                       default='checkpoints/transfer_resnet18/best_model.pth',
+                       default='checkpoints/mobilenet_inspired/best_model.pth',
                        help='CNN model checkpoint')
     parser.add_argument('--device', type=str, default='cuda',
                        choices=['cuda', 'cpu'])

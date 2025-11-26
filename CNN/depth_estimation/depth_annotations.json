@@ -1,0 +1,5256 @@
+{
+  "cam_back_1.mp4": [
+    {
+      "frame": 0,
+      "detections": [
+        {
+          "bbox": [
+            800,
+            479,
+            887,
+            544
+          ],
+          "depth": 11.977777777777778,
+          "class": "car",
+          "confidence": 0.8043091297149658,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            930,
+            476,
+            1015,
+            538
+          ],
+          "depth": 12.011111111111111,
+          "class": "car",
+          "confidence": 0.6829670071601868,
+          "heuristic": "size_position_based"
+        }
+      ]
+    },
+    {
+      "frame": 5,
+      "detections": [
+        {
+          "bbox": [
+            766,
+            500,
+            857,
+            566
+          ],
+          "depth": 11.855555555555554,
+          "class": "car",
+          "confidence": 0.8446014523506165,
+          "heuristic": "size_position_based"
+        }
+      ]
+    },
+    {
+      "frame": 10,
+      "detections": [
+        {
+          "bbox": [
+            1021,
+            162,
+            1056,
+            241
+          ],
+          "depth": 5.928888888888888,
+          "class": "traffic light",
+          "confidence": 0.897909939289093,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            997,
+            481,
+            1158,
+            578
+          ],
+          "depth": 11.788888888888888,
+          "class": "car",
+          "confidence": 0.8391169905662537,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            1188,
+            179,
+            1224,
+            257
+          ],
+          "depth": 5.857777777777778,
+          "class": "traffic light",
+          "confidence": 0.795732855796814,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            328,
+            458,
+            374,
+            578
+          ],
+          "depth": 4.431111111111111,
+          "class": "person",
+          "confidence": 0.7344054579734802,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            163,
+            458,
+            218,
+            620
+          ],
+          "depth": 4.2444444444444445,
+          "class": "person",
+          "confidence": 0.7027806043624878,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            1351,
+            462,
+            1388,
+            576
+          ],
+          "depth": 4.4399999999999995,
+          "class": "person",
+          "confidence": 0.6810020208358765,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            811,
+            471,
+            867,
+            508
+          ],
+          "depth": 12.177777777777777,
+          "class": "car",
+          "confidence": 0.6658662557601929,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            0,
+            469,
+            57,
+            632
+          ],
+          "depth": 4.191111111111111,
+          "class": "person",
+          "confidence": 0.6463506817817688,
+          "heuristic": "size_position_based"
+        }
+      ]
+    },
+    {
+      "frame": 15,
+      "detections": [
+        {
+          "bbox": [
+            941,
+            317,
+            961,
+            356
+          ],
+          "depth": 5.417777777777777,
+          "class": "traffic light",
+          "confidence": 0.6181687712669373,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            551,
+            465,
+            577,
+            529
+          ],
+          "depth": 4.648888888888889,
+          "class": "person",
+          "confidence": 0.5823740363121033,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            1487,
+            270,
+            1522,
+            337
+          ],
+          "depth": 5.502222222222223,
+          "class": "traffic light",
+          "confidence": 0.5594158172607422,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            827,
+            476,
+            884,
+            513
+          ],
+          "depth": 12.15,
+          "class": "car",
+          "confidence": 0.5590928196907043,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            1030,
+            322,
+            1051,
+            361
+          ],
+          "depth": 5.395555555555555,
+          "class": "traffic light",
+          "confidence": 0.4030383229255676,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            589,
+            469,
+            618,
+            535
+          ],
+          "depth": 4.622222222222222,
+          "class": "person",
+          "confidence": 0.40121278166770935,
+          "heuristic": "size_position_based"
+        }
+      ]
+    },
+    {
+      "frame": 20,
+      "detections": [
+        {
+          "bbox": [
+            1361,
+            512,
+            1599,
+            676
+          ],
+          "depth": 5.746666666666667,
+          "class": "car",
+          "confidence": 0.8740620017051697,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            999,
+            337,
+            1021,
+            376
+          ],
+          "depth": 5.328888888888889,
+          "class": "traffic light",
+          "confidence": 0.7206273078918457,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            444,
+            452,
+            483,
+            535
+          ],
+          "depth": 4.622222222222222,
+          "class": "person",
+          "confidence": 0.631102979183197,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            928,
+            330,
+            946,
+            361
+          ],
+          "depth": 5.395555555555555,
+          "class": "traffic light",
+          "confidence": 0.5896293520927429,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            721,
+            156,
+            760,
+            230
+          ],
+          "depth": 5.977777777777778,
+          "class": "traffic light",
+          "confidence": 0.5475006699562073,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            831,
+            469,
+            875,
+            500
+          ],
+          "depth": 12.222222222222221,
+          "class": "car",
+          "confidence": 0.5343939661979675,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            386,
+            450,
+            416,
+            530
+          ],
+          "depth": 4.644444444444444,
+          "class": "person",
+          "confidence": 0.5335701107978821,
+          "heuristic": "size_position_based"
+        }
+      ]
+    },
+    {
+      "frame": 25,
+      "detections": [
+        {
+          "bbox": [
+            1139,
+            493,
+            1309,
+            576
+          ],
+          "depth": 11.8,
+          "class": "car",
+          "confidence": 0.8172322511672974,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            0,
+            566,
+            74,
+            795
+          ],
+          "depth": 10.583333333333334,
+          "class": "car",
+          "confidence": 0.606092095375061,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            535,
+            437,
+            560,
+            508
+          ],
+          "depth": 4.742222222222223,
+          "class": "person",
+          "confidence": 0.46454301476478577,
+          "heuristic": "size_position_based"
+        }
+      ]
+    },
+    {
+      "frame": 30,
+      "detections": [
+        {
+          "bbox": [
+            1357,
+            509,
+            1599,
+            695
+          ],
+          "depth": 5.683333333333334,
+          "class": "car",
+          "confidence": 0.8086133003234863,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            544,
+            476,
+            682,
+            563
+          ],
+          "depth": 11.872222222222222,
+          "class": "car",
+          "confidence": 0.7908691763877869,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            1335,
+            503,
+            1366,
+            570
+          ],
+          "depth": 4.466666666666667,
+          "class": "person",
+          "confidence": 0.704843282699585,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            1011,
+            481,
+            1077,
+            524
+          ],
+          "depth": 12.088888888888889,
+          "class": "car",
+          "confidence": 0.5906904935836792,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            1305,
+            504,
+            1335,
+            569
+          ],
+          "depth": 4.471111111111111,
+          "class": "person",
+          "confidence": 0.582339346408844,
+          "heuristic": "size_position_based"
+        }
+      ]
+    },
+    {
+      "frame": 35,
+      "detections": [
+        {
+          "bbox": [
+            1269,
+            493,
+            1531,
+            612
+          ],
+          "depth": 5.96,
+          "class": "car",
+          "confidence": 0.8074581027030945,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            127,
+            439,
+            346,
+            530
+          ],
+          "depth": 12.055555555555555,
+          "class": "car",
+          "confidence": 0.7247108817100525,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            0,
+            548,
+            87,
+            766
+          ],
+          "depth": 10.744444444444444,
+          "class": "car",
+          "confidence": 0.7204936742782593,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            1078,
+            492,
+            1161,
+            537
+          ],
+          "depth": 12.016666666666666,
+          "class": "car",
+          "confidence": 0.6657368540763855,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            1152,
+            500,
+            1282,
+            562
+          ],
+          "depth": 11.877777777777778,
+          "class": "car",
+          "confidence": 0.6347805857658386,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            730,
+            479,
+            775,
+            513
+          ],
+          "depth": 12.15,
+          "class": "car",
+          "confidence": 0.5890399217605591,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            1041,
+            490,
+            1096,
+            532
+          ],
+          "depth": 12.044444444444444,
+          "class": "car",
+          "confidence": 0.5499624013900757,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            1195,
+            502,
+            1284,
+            564
+          ],
+          "depth": 11.866666666666667,
+          "class": "car",
+          "confidence": 0.5450832843780518,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            0,
+            444,
+            149,
+            519
+          ],
+          "depth": 12.116666666666667,
+          "class": "car",
+          "confidence": 0.4803178012371063,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            1042,
+            491,
+            1113,
+            535
+          ],
+          "depth": 12.027777777777779,
+          "class": "car",
+          "confidence": 0.41339388489723206,
+          "heuristic": "size_position_based"
+        }
+      ]
+    }
+  ],
+  "cam_back_1_adas.mp4": [
+    {
+      "frame": 10,
+      "detections": [
+        {
+          "bbox": [
+            1021,
+            162,
+            1056,
+            241
+          ],
+          "depth": 5.928888888888888,
+          "class": "traffic light",
+          "confidence": 0.874825119972229,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            1188,
+            179,
+            1224,
+            256
+          ],
+          "depth": 5.862222222222222,
+          "class": "traffic light",
+          "confidence": 0.7330360412597656,
+          "heuristic": "size_position_based"
+        }
+      ]
+    },
+    {
+      "frame": 15,
+      "detections": [
+        {
+          "bbox": [
+            941,
+            317,
+            961,
+            356
+          ],
+          "depth": 5.417777777777777,
+          "class": "traffic light",
+          "confidence": 0.4957205057144165,
+          "heuristic": "size_position_based"
+        }
+      ]
+    },
+    {
+      "frame": 20,
+      "detections": [
+        {
+          "bbox": [
+            1366,
+            510,
+            1599,
+            673
+          ],
+          "depth": 5.756666666666667,
+          "class": "car",
+          "confidence": 0.8581952452659607,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            999,
+            336,
+            1022,
+            376
+          ],
+          "depth": 5.328888888888889,
+          "class": "traffic light",
+          "confidence": 0.6994521617889404,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            928,
+            330,
+            946,
+            361
+          ],
+          "depth": 5.395555555555555,
+          "class": "traffic light",
+          "confidence": 0.5908889174461365,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            720,
+            156,
+            759,
+            230
+          ],
+          "depth": 5.977777777777778,
+          "class": "traffic light",
+          "confidence": 0.5189383029937744,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            830,
+            468,
+            880,
+            505
+          ],
+          "depth": 12.194444444444445,
+          "class": "car",
+          "confidence": 0.49751850962638855,
+          "heuristic": "size_position_based"
+        }
+      ]
+    }
+  ],
+  "cam_back_1_detected.mp4": [
+    {
+      "frame": 10,
+      "detections": [
+        {
+          "bbox": [
+            1020,
+            161,
+            1057,
+            241
+          ],
+          "depth": 5.928888888888888,
+          "class": "traffic light",
+          "confidence": 0.8781523108482361,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            1187,
+            179,
+            1224,
+            257
+          ],
+          "depth": 5.857777777777778,
+          "class": "traffic light",
+          "confidence": 0.7775473594665527,
+          "heuristic": "size_position_based"
+        }
+      ]
+    },
+    {
+      "frame": 15,
+      "detections": [
+        {
+          "bbox": [
+            1487,
+            270,
+            1522,
+            338
+          ],
+          "depth": 5.497777777777777,
+          "class": "traffic light",
+          "confidence": 0.5520713925361633,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            941,
+            317,
+            961,
+            356
+          ],
+          "depth": 5.417777777777777,
+          "class": "traffic light",
+          "confidence": 0.5295990705490112,
+          "heuristic": "size_position_based"
+        }
+      ]
+    },
+    {
+      "frame": 20,
+      "detections": [
+        {
+          "bbox": [
+            1362,
+            510,
+            1599,
+            674
+          ],
+          "depth": 5.753333333333333,
+          "class": "car",
+          "confidence": 0.8577889204025269,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            999,
+            337,
+            1022,
+            376
+          ],
+          "depth": 5.328888888888889,
+          "class": "traffic light",
+          "confidence": 0.6925786137580872,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            928,
+            330,
+            946,
+            361
+          ],
+          "depth": 5.395555555555555,
+          "class": "traffic light",
+          "confidence": 0.5424696803092957,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            720,
+            155,
+            760,
+            230
+          ],
+          "depth": 5.977777777777778,
+          "class": "traffic light",
+          "confidence": 0.4533188045024872,
+          "heuristic": "size_position_based"
+        }
+      ]
+    }
+  ],
+  "cam_back_1_with_motion.mp4": [
+    {
+      "frame": 10,
+      "detections": [
+        {
+          "bbox": [
+            1021,
+            161,
+            1057,
+            241
+          ],
+          "depth": 5.928888888888888,
+          "class": "traffic light",
+          "confidence": 0.8811646103858948,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            1187,
+            178,
+            1224,
+            257
+          ],
+          "depth": 5.857777777777778,
+          "class": "traffic light",
+          "confidence": 0.7743635177612305,
+          "heuristic": "size_position_based"
+        }
+      ]
+    },
+    {
+      "frame": 15,
+      "detections": [
+        {
+          "bbox": [
+            1487,
+            270,
+            1522,
+            338
+          ],
+          "depth": 5.497777777777777,
+          "class": "traffic light",
+          "confidence": 0.5525988936424255,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            941,
+            317,
+            961,
+            356
+          ],
+          "depth": 5.417777777777777,
+          "class": "traffic light",
+          "confidence": 0.5392777919769287,
+          "heuristic": "size_position_based"
+        }
+      ]
+    },
+    {
+      "frame": 20,
+      "detections": [
+        {
+          "bbox": [
+            1362,
+            510,
+            1598,
+            674
+          ],
+          "depth": 5.753333333333333,
+          "class": "car",
+          "confidence": 0.758704423904419,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            999,
+            337,
+            1022,
+            376
+          ],
+          "depth": 5.328888888888889,
+          "class": "traffic light",
+          "confidence": 0.6770341992378235,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            928,
+            330,
+            946,
+            361
+          ],
+          "depth": 5.395555555555555,
+          "class": "traffic light",
+          "confidence": 0.5407521724700928,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            720,
+            155,
+            760,
+            230
+          ],
+          "depth": 5.977777777777778,
+          "class": "traffic light",
+          "confidence": 0.46539101004600525,
+          "heuristic": "size_position_based"
+        }
+      ]
+    }
+  ],
+  "cam_back_2.mp4": [
+    {
+      "frame": 0,
+      "detections": [
+        {
+          "bbox": [
+            95,
+            486,
+            433,
+            604
+          ],
+          "depth": 5.986666666666666,
+          "class": "car",
+          "confidence": 0.8245118856430054,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            804,
+            474,
+            858,
+            519
+          ],
+          "depth": 12.116666666666667,
+          "class": "car",
+          "confidence": 0.7633488774299622,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            339,
+            460,
+            599,
+            560
+          ],
+          "depth": 6.133333333333333,
+          "class": "car",
+          "confidence": 0.6087319254875183,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            889,
+            473,
+            944,
+            504
+          ],
+          "depth": 12.2,
+          "class": "car",
+          "confidence": 0.4873707592487335,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            1104,
+            465,
+            1154,
+            499
+          ],
+          "depth": 12.227777777777778,
+          "class": "car",
+          "confidence": 0.4332614839076996,
+          "heuristic": "size_position_based"
+        }
+      ]
+    },
+    {
+      "frame": 5,
+      "detections": [
+        {
+          "bbox": [
+            1397,
+            510,
+            1427,
+            573
+          ],
+          "depth": 4.453333333333333,
+          "class": "fire hydrant",
+          "confidence": 0.8717653155326843,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            1464,
+            492,
+            1599,
+            639
+          ],
+          "depth": 11.45,
+          "class": "car",
+          "confidence": 0.7790921330451965,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            397,
+            462,
+            535,
+            559
+          ],
+          "depth": 11.894444444444446,
+          "class": "car",
+          "confidence": 0.6502655744552612,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            828,
+            476,
+            883,
+            516
+          ],
+          "depth": 12.133333333333333,
+          "class": "car",
+          "confidence": 0.6447951793670654,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            508,
+            466,
+            648,
+            545
+          ],
+          "depth": 11.972222222222221,
+          "class": "car",
+          "confidence": 0.5566577911376953,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            278,
+            463,
+            457,
+            578
+          ],
+          "depth": 6.073333333333333,
+          "class": "car",
+          "confidence": 0.46318528056144714,
+          "heuristic": "size_position_based"
+        }
+      ]
+    },
+    {
+      "frame": 10,
+      "detections": [
+        {
+          "bbox": [
+            1061,
+            477,
+            1160,
+            532
+          ],
+          "depth": 12.044444444444444,
+          "class": "car",
+          "confidence": 0.8360075950622559,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            1167,
+            453,
+            1463,
+            584
+          ],
+          "depth": 6.053333333333334,
+          "class": "truck",
+          "confidence": 0.758711576461792,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            849,
+            473,
+            896,
+            513
+          ],
+          "depth": 12.15,
+          "class": "car",
+          "confidence": 0.7264547944068909,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            300,
+            454,
+            584,
+            567
+          ],
+          "depth": 6.109999999999999,
+          "class": "car",
+          "confidence": 0.7107316851615906,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            1495,
+            530,
+            1599,
+            635
+          ],
+          "depth": 11.472222222222221,
+          "class": "car",
+          "confidence": 0.7010055184364319,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            569,
+            471,
+            674,
+            532
+          ],
+          "depth": 12.044444444444444,
+          "class": "car",
+          "confidence": 0.6246477961540222,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            660,
+            471,
+            718,
+            517
+          ],
+          "depth": 12.127777777777778,
+          "class": "car",
+          "confidence": 0.44252121448516846,
+          "heuristic": "size_position_based"
+        }
+      ]
+    },
+    {
+      "frame": 15,
+      "detections": [
+        {
+          "bbox": [
+            1322,
+            474,
+            1599,
+            654
+          ],
+          "depth": 5.82,
+          "class": "car",
+          "confidence": 0.8494991064071655,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            1176,
+            483,
+            1366,
+            575
+          ],
+          "depth": 11.805555555555555,
+          "class": "car",
+          "confidence": 0.800083339214325,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            827,
+            481,
+            876,
+            518
+          ],
+          "depth": 12.122222222222222,
+          "class": "car",
+          "confidence": 0.7420517206192017,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            1095,
+            490,
+            1199,
+            548
+          ],
+          "depth": 11.955555555555556,
+          "class": "car",
+          "confidence": 0.652759313583374,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            1036,
+            492,
+            1109,
+            536
+          ],
+          "depth": 12.022222222222222,
+          "class": "car",
+          "confidence": 0.623944103717804,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            392,
+            461,
+            567,
+            548
+          ],
+          "depth": 11.955555555555556,
+          "class": "car",
+          "confidence": 0.6175826787948608,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            201,
+            458,
+            478,
+            567
+          ],
+          "depth": 6.109999999999999,
+          "class": "car",
+          "confidence": 0.607046365737915,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            913,
+            477,
+            965,
+            526
+          ],
+          "depth": 12.077777777777778,
+          "class": "car",
+          "confidence": 0.5227077603340149,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            1095,
+            489,
+            1167,
+            546
+          ],
+          "depth": 11.966666666666667,
+          "class": "car",
+          "confidence": 0.5192410945892334,
+          "heuristic": "size_position_based"
+        }
+      ]
+    },
+    {
+      "frame": 20,
+      "detections": [
+        {
+          "bbox": [
+            1202,
+            480,
+            1399,
+            577
+          ],
+          "depth": 11.794444444444444,
+          "class": "car",
+          "confidence": 0.8776245713233948,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            1360,
+            476,
+            1599,
+            644
+          ],
+          "depth": 5.8533333333333335,
+          "class": "car",
+          "confidence": 0.849597156047821,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            487,
+            476,
+            652,
+            538
+          ],
+          "depth": 12.011111111111111,
+          "class": "car",
+          "confidence": 0.7749627828598022,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            43,
+            489,
+            435,
+            612
+          ],
+          "depth": 5.96,
+          "class": "car",
+          "confidence": 0.767828106880188,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            848,
+            485,
+            893,
+            517
+          ],
+          "depth": 12.127777777777778,
+          "class": "car",
+          "confidence": 0.7477111220359802,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            0,
+            492,
+            59,
+            572
+          ],
+          "depth": 11.822222222222223,
+          "class": "car",
+          "confidence": 0.6092492341995239,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            1069,
+            463,
+            1198,
+            540
+          ],
+          "depth": 12.0,
+          "class": "car",
+          "confidence": 0.5328728556632996,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            1023,
+            479,
+            1081,
+            525
+          ],
+          "depth": 12.083333333333332,
+          "class": "car",
+          "confidence": 0.5161291360855103,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            256,
+            474,
+            471,
+            577
+          ],
+          "depth": 6.076666666666666,
+          "class": "car",
+          "confidence": 0.44841304421424866,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            973,
+            485,
+            1006,
+            512
+          ],
+          "depth": 12.155555555555555,
+          "class": "car",
+          "confidence": 0.4482635259628296,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            647,
+            479,
+            716,
+            519
+          ],
+          "depth": 12.116666666666667,
+          "class": "car",
+          "confidence": 0.44123610854148865,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            0,
+            490,
+            116,
+            570
+          ],
+          "depth": 11.833333333333334,
+          "class": "car",
+          "confidence": 0.4245205819606781,
+          "heuristic": "size_position_based"
+        }
+      ]
+    },
+    {
+      "frame": 25,
+      "detections": [
+        {
+          "bbox": [
+            1211,
+            483,
+            1440,
+            582
+          ],
+          "depth": 6.0600000000000005,
+          "class": "car",
+          "confidence": 0.9200646877288818,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            228,
+            486,
+            377,
+            542
+          ],
+          "depth": 11.988888888888889,
+          "class": "car",
+          "confidence": 0.803142249584198,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            571,
+            474,
+            708,
+            527
+          ],
+          "depth": 12.072222222222223,
+          "class": "car",
+          "confidence": 0.8027262091636658,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            853,
+            473,
+            902,
+            515
+          ],
+          "depth": 12.13888888888889,
+          "class": "car",
+          "confidence": 0.7380931973457336,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            1121,
+            472,
+            1242,
+            542
+          ],
+          "depth": 11.988888888888889,
+          "class": "car",
+          "confidence": 0.6495829820632935,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            1068,
+            480,
+            1120,
+            522
+          ],
+          "depth": 12.1,
+          "class": "car",
+          "confidence": 0.5042818784713745,
+          "heuristic": "size_position_based"
+        }
+      ]
+    },
+    {
+      "frame": 30,
+      "detections": [
+        {
+          "bbox": [
+            1063,
+            491,
+            1217,
+            571
+          ],
+          "depth": 11.827777777777778,
+          "class": "car",
+          "confidence": 0.7577053904533386,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            0,
+            477,
+            124,
+            572
+          ],
+          "depth": 11.822222222222223,
+          "class": "car",
+          "confidence": 0.7266404628753662,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            824,
+            478,
+            874,
+            519
+          ],
+          "depth": 12.116666666666667,
+          "class": "car",
+          "confidence": 0.708244264125824,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            70,
+            473,
+            285,
+            556
+          ],
+          "depth": 11.911111111111111,
+          "class": "car",
+          "confidence": 0.6317349672317505,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            999,
+            489,
+            1052,
+            521
+          ],
+          "depth": 12.105555555555556,
+          "class": "car",
+          "confidence": 0.5438880920410156,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            693,
+            475,
+            763,
+            508
+          ],
+          "depth": 12.177777777777777,
+          "class": "car",
+          "confidence": 0.45575135946273804,
+          "heuristic": "size_position_based"
+        }
+      ]
+    },
+    {
+      "frame": 35,
+      "detections": [
+        {
+          "bbox": [
+            0,
+            110,
+            723,
+            842
+          ],
+          "depth": 3.1288888888888886,
+          "class": "bus",
+          "confidence": 0.9146987199783325,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            831,
+            475,
+            881,
+            515
+          ],
+          "depth": 12.13888888888889,
+          "class": "car",
+          "confidence": 0.5844041109085083,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            963,
+            483,
+            1006,
+            514
+          ],
+          "depth": 12.144444444444444,
+          "class": "car",
+          "confidence": 0.5320547223091125,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            1449,
+            417,
+            1598,
+            743
+          ],
+          "depth": 5.523333333333333,
+          "class": "truck",
+          "confidence": 0.45960476994514465,
+          "heuristic": "size_position_based"
+        }
+      ]
+    },
+    {
+      "frame": 40,
+      "detections": [
+        {
+          "bbox": [
+            655,
+            426,
+            802,
+            530
+          ],
+          "depth": 12.055555555555555,
+          "class": "bus",
+          "confidence": 0.7083002328872681,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            841,
+            480,
+            886,
+            517
+          ],
+          "depth": 12.127777777777778,
+          "class": "car",
+          "confidence": 0.5411973595619202,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            0,
+            485,
+            134,
+            570
+          ],
+          "depth": 11.833333333333334,
+          "class": "car",
+          "confidence": 0.5138176083564758,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            322,
+            473,
+            381,
+            520
+          ],
+          "depth": 12.11111111111111,
+          "class": "car",
+          "confidence": 0.4870200753211975,
+          "heuristic": "size_position_based"
+        }
+      ]
+    },
+    {
+      "frame": 45,
+      "detections": [
+        {
+          "bbox": [
+            913,
+            220,
+            1599,
+            757
+          ],
+          "depth": 3.3177777777777777,
+          "class": "truck",
+          "confidence": 0.9153658151626587,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            716,
+            430,
+            1026,
+            714
+          ],
+          "depth": 3.413333333333333,
+          "class": "truck",
+          "confidence": 0.7983652353286743,
+          "heuristic": "size_position_based"
+        }
+      ]
+    },
+    {
+      "frame": 50,
+      "detections": [
+        {
+          "bbox": [
+            913,
+            219,
+            1599,
+            756
+          ],
+          "depth": 3.3200000000000003,
+          "class": "truck",
+          "confidence": 0.9143339395523071,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            714,
+            431,
+            1027,
+            715
+          ],
+          "depth": 3.4111111111111114,
+          "class": "truck",
+          "confidence": 0.8072964549064636,
+          "heuristic": "size_position_based"
+        }
+      ]
+    },
+    {
+      "frame": 55,
+      "detections": [
+        {
+          "bbox": [
+            913,
+            219,
+            1599,
+            754
+          ],
+          "depth": 3.3244444444444445,
+          "class": "truck",
+          "confidence": 0.9027190804481506,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            715,
+            431,
+            1027,
+            715
+          ],
+          "depth": 3.4111111111111114,
+          "class": "truck",
+          "confidence": 0.8072574734687805,
+          "heuristic": "size_position_based"
+        }
+      ]
+    },
+    {
+      "frame": 60,
+      "detections": [
+        {
+          "bbox": [
+            914,
+            219,
+            1600,
+            752
+          ],
+          "depth": 3.328888888888889,
+          "class": "truck",
+          "confidence": 0.8774132132530212,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            715,
+            431,
+            1026,
+            715
+          ],
+          "depth": 3.4111111111111114,
+          "class": "truck",
+          "confidence": 0.7866193056106567,
+          "heuristic": "size_position_based"
+        }
+      ]
+    },
+    {
+      "frame": 65,
+      "detections": [
+        {
+          "bbox": [
+            913,
+            219,
+            1600,
+            758
+          ],
+          "depth": 3.3155555555555556,
+          "class": "truck",
+          "confidence": 0.884833574295044,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            715,
+            432,
+            1028,
+            714
+          ],
+          "depth": 3.413333333333333,
+          "class": "truck",
+          "confidence": 0.816177248954773,
+          "heuristic": "size_position_based"
+        }
+      ]
+    },
+    {
+      "frame": 70,
+      "detections": [
+        {
+          "bbox": [
+            913,
+            219,
+            1599,
+            765
+          ],
+          "depth": 3.3,
+          "class": "truck",
+          "confidence": 0.9082719683647156,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            715,
+            432,
+            1027,
+            716
+          ],
+          "depth": 3.408888888888889,
+          "class": "truck",
+          "confidence": 0.8175541162490845,
+          "heuristic": "size_position_based"
+        }
+      ]
+    },
+    {
+      "frame": 75,
+      "detections": [
+        {
+          "bbox": [
+            913,
+            219,
+            1599,
+            756
+          ],
+          "depth": 3.3200000000000003,
+          "class": "truck",
+          "confidence": 0.9046533703804016,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            715,
+            431,
+            1026,
+            715
+          ],
+          "depth": 3.4111111111111114,
+          "class": "truck",
+          "confidence": 0.7934036254882812,
+          "heuristic": "size_position_based"
+        }
+      ]
+    },
+    {
+      "frame": 80,
+      "detections": [
+        {
+          "bbox": [
+            913,
+            219,
+            1599,
+            759
+          ],
+          "depth": 3.3133333333333335,
+          "class": "truck",
+          "confidence": 0.9089966416358948,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            715,
+            431,
+            1025,
+            715
+          ],
+          "depth": 3.4111111111111114,
+          "class": "truck",
+          "confidence": 0.8056656122207642,
+          "heuristic": "size_position_based"
+        }
+      ]
+    }
+  ],
+  "cam_back_2_adas.mp4": [
+    {
+      "frame": 0,
+      "detections": [
+        {
+          "bbox": [
+            333,
+            434,
+            607,
+            560
+          ],
+          "depth": 6.133333333333333,
+          "class": "bus",
+          "confidence": 0.5606017708778381,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            92,
+            487,
+            341,
+            600
+          ],
+          "depth": 6.0,
+          "class": "car",
+          "confidence": 0.44490674138069153,
+          "heuristic": "size_position_based"
+        }
+      ]
+    },
+    {
+      "frame": 5,
+      "detections": [
+        {
+          "bbox": [
+            1397,
+            510,
+            1426,
+            573
+          ],
+          "depth": 4.453333333333333,
+          "class": "fire hydrant",
+          "confidence": 0.8585246801376343,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            1467,
+            491,
+            1599,
+            635
+          ],
+          "depth": 11.472222222222221,
+          "class": "car",
+          "confidence": 0.7577165961265564,
+          "heuristic": "size_position_based"
+        }
+      ]
+    },
+    {
+      "frame": 10,
+      "detections": [
+        {
+          "bbox": [
+            568,
+            435,
+            769,
+            531
+          ],
+          "depth": 12.05,
+          "class": "bus",
+          "confidence": 0.592715859413147,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            1169,
+            427,
+            1469,
+            584
+          ],
+          "depth": 6.053333333333334,
+          "class": "truck",
+          "confidence": 0.4001018702983856,
+          "heuristic": "size_position_based"
+        }
+      ]
+    },
+    {
+      "frame": 15,
+      "detections": [
+        {
+          "bbox": [
+            1331,
+            474,
+            1597,
+            648
+          ],
+          "depth": 5.84,
+          "class": "car",
+          "confidence": 0.7870284914970398,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            1187,
+            483,
+            1364,
+            573
+          ],
+          "depth": 11.816666666666666,
+          "class": "car",
+          "confidence": 0.5128872394561768,
+          "heuristic": "size_position_based"
+        }
+      ]
+    },
+    {
+      "frame": 20,
+      "detections": [
+        {
+          "bbox": [
+            1381,
+            477,
+            1598,
+            640
+          ],
+          "depth": 5.866666666666666,
+          "class": "car",
+          "confidence": 0.7524023652076721,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            847,
+            485,
+            894,
+            517
+          ],
+          "depth": 12.127777777777778,
+          "class": "car",
+          "confidence": 0.7268876433372498,
+          "heuristic": "size_position_based"
+        }
+      ]
+    },
+    {
+      "frame": 25,
+      "detections": [
+        {
+          "bbox": [
+            1061,
+            444,
+            1445,
+            587
+          ],
+          "depth": 3.6955555555555555,
+          "class": "bus",
+          "confidence": 0.5272483229637146,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            716,
+            480,
+            756,
+            512
+          ],
+          "depth": 12.155555555555555,
+          "class": "car",
+          "confidence": 0.4846951961517334,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            567,
+            443,
+            716,
+            533
+          ],
+          "depth": 12.038888888888888,
+          "class": "truck",
+          "confidence": 0.4501091539859772,
+          "heuristic": "size_position_based"
+        }
+      ]
+    },
+    {
+      "frame": 35,
+      "detections": [
+        {
+          "bbox": [
+            5,
+            114,
+            722,
+            817
+          ],
+          "depth": 3.1844444444444444,
+          "class": "bus",
+          "confidence": 0.9184522032737732,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            1511,
+            516,
+            1598,
+            738
+          ],
+          "depth": 10.9,
+          "class": "car",
+          "confidence": 0.6048450469970703,
+          "heuristic": "size_position_based"
+        }
+      ]
+    },
+    {
+      "frame": 40,
+      "detections": [
+        {
+          "bbox": [
+            129,
+            480,
+            288,
+            560
+          ],
+          "depth": 11.88888888888889,
+          "class": "car",
+          "confidence": 0.7024403214454651,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            652,
+            422,
+            807,
+            555
+          ],
+          "depth": 6.15,
+          "class": "bus",
+          "confidence": 0.6855444312095642,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            2,
+            487,
+            137,
+            569
+          ],
+          "depth": 11.838888888888889,
+          "class": "car",
+          "confidence": 0.4441547989845276,
+          "heuristic": "size_position_based"
+        }
+      ]
+    },
+    {
+      "frame": 45,
+      "detections": [
+        {
+          "bbox": [
+            916,
+            218,
+            1594,
+            756
+          ],
+          "depth": 3.3200000000000003,
+          "class": "truck",
+          "confidence": 0.8453683853149414,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            714,
+            424,
+            1025,
+            718
+          ],
+          "depth": 3.4044444444444446,
+          "class": "truck",
+          "confidence": 0.7691887617111206,
+          "heuristic": "size_position_based"
+        }
+      ]
+    },
+    {
+      "frame": 50,
+      "detections": [
+        {
+          "bbox": [
+            915,
+            219,
+            1593,
+            756
+          ],
+          "depth": 3.3200000000000003,
+          "class": "truck",
+          "confidence": 0.8526756763458252,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            715,
+            425,
+            1026,
+            716
+          ],
+          "depth": 3.408888888888889,
+          "class": "truck",
+          "confidence": 0.7508429288864136,
+          "heuristic": "size_position_based"
+        }
+      ]
+    },
+    {
+      "frame": 55,
+      "detections": [
+        {
+          "bbox": [
+            914,
+            218,
+            1595,
+            753
+          ],
+          "depth": 3.3266666666666667,
+          "class": "truck",
+          "confidence": 0.8206743001937866,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            715,
+            424,
+            1026,
+            714
+          ],
+          "depth": 3.413333333333333,
+          "class": "truck",
+          "confidence": 0.7328264117240906,
+          "heuristic": "size_position_based"
+        }
+      ]
+    },
+    {
+      "frame": 60,
+      "detections": [
+        {
+          "bbox": [
+            919,
+            220,
+            1593,
+            751
+          ],
+          "depth": 3.3311111111111114,
+          "class": "truck",
+          "confidence": 0.7596554160118103,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            715,
+            425,
+            1021,
+            713
+          ],
+          "depth": 3.4155555555555557,
+          "class": "truck",
+          "confidence": 0.7569864988327026,
+          "heuristic": "size_position_based"
+        }
+      ]
+    },
+    {
+      "frame": 65,
+      "detections": [
+        {
+          "bbox": [
+            916,
+            219,
+            1595,
+            755
+          ],
+          "depth": 3.322222222222222,
+          "class": "truck",
+          "confidence": 0.8085409998893738,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            715,
+            426,
+            1029,
+            715
+          ],
+          "depth": 3.4111111111111114,
+          "class": "truck",
+          "confidence": 0.7876110076904297,
+          "heuristic": "size_position_based"
+        }
+      ]
+    },
+    {
+      "frame": 70,
+      "detections": [
+        {
+          "bbox": [
+            916,
+            219,
+            1593,
+            760
+          ],
+          "depth": 3.311111111111111,
+          "class": "truck",
+          "confidence": 0.8291126489639282,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            715,
+            425,
+            1026,
+            718
+          ],
+          "depth": 3.4044444444444446,
+          "class": "truck",
+          "confidence": 0.7717421054840088,
+          "heuristic": "size_position_based"
+        }
+      ]
+    },
+    {
+      "frame": 75,
+      "detections": [
+        {
+          "bbox": [
+            915,
+            218,
+            1594,
+            754
+          ],
+          "depth": 3.3244444444444445,
+          "class": "truck",
+          "confidence": 0.8351604342460632,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            715,
+            425,
+            1024,
+            716
+          ],
+          "depth": 3.408888888888889,
+          "class": "truck",
+          "confidence": 0.7692306041717529,
+          "heuristic": "size_position_based"
+        }
+      ]
+    },
+    {
+      "frame": 80,
+      "detections": [
+        {
+          "bbox": [
+            916,
+            219,
+            1594,
+            751
+          ],
+          "depth": 3.3311111111111114,
+          "class": "truck",
+          "confidence": 0.836929976940155,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            715,
+            425,
+            1022,
+            713
+          ],
+          "depth": 3.4155555555555557,
+          "class": "truck",
+          "confidence": 0.7896163463592529,
+          "heuristic": "size_position_based"
+        }
+      ]
+    }
+  ],
+  "cam_back_3.mp4": [
+    {
+      "frame": 0,
+      "detections": [
+        {
+          "bbox": [
+            760,
+            465,
+            924,
+            610
+          ],
+          "depth": 5.966666666666667,
+          "class": "car",
+          "confidence": 0.8933246731758118,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            1169,
+            453,
+            1380,
+            560
+          ],
+          "depth": 6.133333333333333,
+          "class": "car",
+          "confidence": 0.8023532629013062,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            1502,
+            470,
+            1600,
+            531
+          ],
+          "depth": 12.05,
+          "class": "car",
+          "confidence": 0.6809372305870056,
+          "heuristic": "size_position_based"
+        }
+      ]
+    },
+    {
+      "frame": 5,
+      "detections": [
+        {
+          "bbox": [
+            714,
+            462,
+            900,
+            624
+          ],
+          "depth": 5.92,
+          "class": "car",
+          "confidence": 0.8806169033050537,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            1002,
+            466,
+            1095,
+            527
+          ],
+          "depth": 12.072222222222223,
+          "class": "car",
+          "confidence": 0.762470543384552,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            1210,
+            478,
+            1325,
+            514
+          ],
+          "depth": 12.144444444444444,
+          "class": "car",
+          "confidence": 0.4515383839607239,
+          "heuristic": "size_position_based"
+        }
+      ]
+    },
+    {
+      "frame": 10,
+      "detections": [
+        {
+          "bbox": [
+            694,
+            466,
+            921,
+            670
+          ],
+          "depth": 5.766666666666667,
+          "class": "car",
+          "confidence": 0.8729580044746399,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            916,
+            477,
+            982,
+            523
+          ],
+          "depth": 12.094444444444445,
+          "class": "car",
+          "confidence": 0.7554274201393127,
+          "heuristic": "size_position_based"
+        }
+      ]
+    },
+    {
+      "frame": 15,
+      "detections": [
+        {
+          "bbox": [
+            610,
+            462,
+            910,
+            722
+          ],
+          "depth": 3.3955555555555557,
+          "class": "car",
+          "confidence": 0.8958216905593872,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            796,
+            406,
+            945,
+            577
+          ],
+          "depth": 6.076666666666666,
+          "class": "truck",
+          "confidence": 0.6447879672050476,
+          "heuristic": "size_position_based"
+        }
+      ]
+    },
+    {
+      "frame": 20,
+      "detections": [
+        {
+          "bbox": [
+            393,
+            450,
+            937,
+            836
+          ],
+          "depth": 3.1422222222222222,
+          "class": "car",
+          "confidence": 0.909260094165802,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            848,
+            328,
+            1320,
+            693
+          ],
+          "depth": 3.46,
+          "class": "bus",
+          "confidence": 0.6085758805274963,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            848,
+            326,
+            1321,
+            691
+          ],
+          "depth": 3.464444444444444,
+          "class": "truck",
+          "confidence": 0.44670823216438293,
+          "heuristic": "size_position_based"
+        }
+      ]
+    },
+    {
+      "frame": 25,
+      "detections": [
+        {
+          "bbox": [
+            379,
+            450,
+            944,
+            837
+          ],
+          "depth": 3.1399999999999997,
+          "class": "car",
+          "confidence": 0.9179942011833191,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            873,
+            484,
+            915,
+            524
+          ],
+          "depth": 12.088888888888889,
+          "class": "car",
+          "confidence": 0.6521390676498413,
+          "heuristic": "size_position_based"
+        }
+      ]
+    },
+    {
+      "frame": 30,
+      "detections": [
+        {
+          "bbox": [
+            379,
+            450,
+            944,
+            838
+          ],
+          "depth": 3.137777777777778,
+          "class": "car",
+          "confidence": 0.9056991338729858,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            873,
+            484,
+            914,
+            524
+          ],
+          "depth": 12.088888888888889,
+          "class": "car",
+          "confidence": 0.6383266448974609,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            1179,
+            506,
+            1224,
+            540
+          ],
+          "depth": 12.0,
+          "class": "car",
+          "confidence": 0.4312679171562195,
+          "heuristic": "size_position_based"
+        }
+      ]
+    },
+    {
+      "frame": 35,
+      "detections": [
+        {
+          "bbox": [
+            379,
+            448,
+            941,
+            838
+          ],
+          "depth": 3.137777777777778,
+          "class": "car",
+          "confidence": 0.9118770956993103,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            873,
+            484,
+            915,
+            524
+          ],
+          "depth": 12.088888888888889,
+          "class": "car",
+          "confidence": 0.6457425951957703,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            1177,
+            505,
+            1236,
+            543
+          ],
+          "depth": 11.983333333333333,
+          "class": "car",
+          "confidence": 0.47044509649276733,
+          "heuristic": "size_position_based"
+        }
+      ]
+    },
+    {
+      "frame": 40,
+      "detections": [
+        {
+          "bbox": [
+            380,
+            450,
+            944,
+            838
+          ],
+          "depth": 3.137777777777778,
+          "class": "car",
+          "confidence": 0.9026845693588257,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            873,
+            484,
+            914,
+            524
+          ],
+          "depth": 12.088888888888889,
+          "class": "car",
+          "confidence": 0.6051591038703918,
+          "heuristic": "size_position_based"
+        }
+      ]
+    }
+  ],
+  "cam_back_3_adas.mp4": [
+    {
+      "frame": 0,
+      "detections": [
+        {
+          "bbox": [
+            1164,
+            425,
+            1391,
+            601
+          ],
+          "depth": 5.996666666666666,
+          "class": "bus",
+          "confidence": 0.6202593445777893,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            1499,
+            441,
+            1599,
+            584
+          ],
+          "depth": 11.755555555555556,
+          "class": "bus",
+          "confidence": 0.5425222516059875,
+          "heuristic": "size_position_based"
+        }
+      ]
+    },
+    {
+      "frame": 5,
+      "detections": [
+        {
+          "bbox": [
+            692,
+            431,
+            913,
+            627
+          ],
+          "depth": 5.91,
+          "class": "bus",
+          "confidence": 0.5368606448173523,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            1204,
+            450,
+            1356,
+            608
+          ],
+          "depth": 5.973333333333334,
+          "class": "bus",
+          "confidence": 0.4544418752193451,
+          "heuristic": "size_position_based"
+        }
+      ]
+    },
+    {
+      "frame": 10,
+      "detections": [
+        {
+          "bbox": [
+            695,
+            467,
+            924,
+            667
+          ],
+          "depth": 5.776666666666666,
+          "class": "car",
+          "confidence": 0.6133021116256714,
+          "heuristic": "size_position_based"
+        }
+      ]
+    },
+    {
+      "frame": 15,
+      "detections": [
+        {
+          "bbox": [
+            611,
+            463,
+            913,
+            720
+          ],
+          "depth": 3.4,
+          "class": "car",
+          "confidence": 0.5114787817001343,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            609,
+            462,
+            913,
+            720
+          ],
+          "depth": 3.4,
+          "class": "truck",
+          "confidence": 0.4870050847530365,
+          "heuristic": "size_position_based"
+        }
+      ]
+    },
+    {
+      "frame": 20,
+      "detections": [
+        {
+          "bbox": [
+            398,
+            452,
+            933,
+            831
+          ],
+          "depth": 3.1533333333333333,
+          "class": "car",
+          "confidence": 0.8190643191337585,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            843,
+            310,
+            1313,
+            687
+          ],
+          "depth": 3.4733333333333336,
+          "class": "bus",
+          "confidence": 0.6939969062805176,
+          "heuristic": "size_position_based"
+        }
+      ]
+    },
+    {
+      "frame": 25,
+      "detections": [
+        {
+          "bbox": [
+            384,
+            451,
+            933,
+            829
+          ],
+          "depth": 3.1577777777777776,
+          "class": "car",
+          "confidence": 0.866844892501831,
+          "heuristic": "size_position_based"
+        }
+      ]
+    },
+    {
+      "frame": 30,
+      "detections": [
+        {
+          "bbox": [
+            384,
+            451,
+            926,
+            828
+          ],
+          "depth": 3.16,
+          "class": "car",
+          "confidence": 0.848020076751709,
+          "heuristic": "size_position_based"
+        }
+      ]
+    },
+    {
+      "frame": 35,
+      "detections": [
+        {
+          "bbox": [
+            385,
+            452,
+            926,
+            829
+          ],
+          "depth": 3.1577777777777776,
+          "class": "car",
+          "confidence": 0.8430755138397217,
+          "heuristic": "size_position_based"
+        }
+      ]
+    },
+    {
+      "frame": 40,
+      "detections": [
+        {
+          "bbox": [
+            386,
+            450,
+            930,
+            830
+          ],
+          "depth": 3.1555555555555554,
+          "class": "car",
+          "confidence": 0.816707193851471,
+          "heuristic": "size_position_based"
+        }
+      ]
+    }
+  ],
+  "cam_back_4.mp4": [
+    {
+      "frame": 0,
+      "detections": [
+        {
+          "bbox": [
+            1056,
+            487,
+            1085,
+            585
+          ],
+          "depth": 4.4,
+          "class": "person",
+          "confidence": 0.5239338278770447,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            334,
+            514,
+            488,
+            586
+          ],
+          "depth": 11.744444444444444,
+          "class": "car",
+          "confidence": 0.40756088495254517,
+          "heuristic": "size_position_based"
+        }
+      ]
+    },
+    {
+      "frame": 5,
+      "detections": [
+        {
+          "bbox": [
+            1379,
+            446,
+            1582,
+            893
+          ],
+          "depth": 3.031111111111111,
+          "class": "person",
+          "confidence": 0.8415848612785339,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            1109,
+            48,
+            1599,
+            715
+          ],
+          "depth": 3.4111111111111114,
+          "class": "truck",
+          "confidence": 0.48373985290527344,
+          "heuristic": "size_position_based"
+        }
+      ]
+    },
+    {
+      "frame": 10,
+      "detections": [
+        {
+          "bbox": [
+            952,
+            421,
+            1130,
+            563
+          ],
+          "depth": 6.123333333333333,
+          "class": "truck",
+          "confidence": 0.5041062235832214,
+          "heuristic": "size_position_based"
+        }
+      ]
+    },
+    {
+      "frame": 15,
+      "detections": [
+        {
+          "bbox": [
+            1118,
+            444,
+            1195,
+            522
+          ],
+          "depth": 12.1,
+          "class": "bus",
+          "confidence": 0.5863644480705261,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            1116,
+            439,
+            1196,
+            523
+          ],
+          "depth": 12.094444444444445,
+          "class": "truck",
+          "confidence": 0.4017412066459656,
+          "heuristic": "size_position_based"
+        }
+      ]
+    },
+    {
+      "frame": 20,
+      "detections": [
+        {
+          "bbox": [
+            163,
+            493,
+            233,
+            663
+          ],
+          "depth": 4.053333333333333,
+          "class": "person",
+          "confidence": 0.7971769571304321,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            212,
+            483,
+            282,
+            632
+          ],
+          "depth": 4.191111111111111,
+          "class": "person",
+          "confidence": 0.7419716119766235,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            293,
+            344,
+            331,
+            424
+          ],
+          "depth": 5.115555555555556,
+          "class": "traffic light",
+          "confidence": 0.4868994653224945,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            359,
+            348,
+            384,
+            420
+          ],
+          "depth": 5.133333333333333,
+          "class": "traffic light",
+          "confidence": 0.4046027660369873,
+          "heuristic": "size_position_based"
+        }
+      ]
+    },
+    {
+      "frame": 25,
+      "detections": [
+        {
+          "bbox": [
+            1401,
+            424,
+            1482,
+            599
+          ],
+          "depth": 4.337777777777777,
+          "class": "person",
+          "confidence": 0.820408284664154,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            578,
+            495,
+            628,
+            589
+          ],
+          "depth": 4.382222222222222,
+          "class": "person",
+          "confidence": 0.7762839794158936,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            1303,
+            450,
+            1359,
+            582
+          ],
+          "depth": 4.413333333333334,
+          "class": "person",
+          "confidence": 0.7147708535194397,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            630,
+            509,
+            666,
+            535
+          ],
+          "depth": 12.027777777777779,
+          "class": "car",
+          "confidence": 0.6448773145675659,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            666,
+            509,
+            696,
+            582
+          ],
+          "depth": 4.413333333333334,
+          "class": "person",
+          "confidence": 0.6147769093513489,
+          "heuristic": "size_position_based"
+        }
+      ]
+    },
+    {
+      "frame": 30,
+      "detections": [
+        {
+          "bbox": [
+            0,
+            506,
+            89,
+            583
+          ],
+          "depth": 11.761111111111111,
+          "class": "car",
+          "confidence": 0.5180982947349548,
+          "heuristic": "size_position_based"
+        }
+      ]
+    },
+    {
+      "frame": 35,
+      "detections": [
+        {
+          "bbox": [
+            1,
+            510,
+            263,
+            623
+          ],
+          "depth": 5.923333333333334,
+          "class": "car",
+          "confidence": 0.8930547833442688,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            204,
+            508,
+            348,
+            567
+          ],
+          "depth": 11.85,
+          "class": "car",
+          "confidence": 0.6624504327774048,
+          "heuristic": "size_position_based"
+        }
+      ]
+    }
+  ],
+  "cam_back_4_adas.mp4": [
+    {
+      "frame": 0,
+      "detections": [
+        {
+          "bbox": [
+            329,
+            487,
+            499,
+            591
+          ],
+          "depth": 11.716666666666667,
+          "class": "bus",
+          "confidence": 0.7541857361793518,
+          "heuristic": "size_position_based"
+        }
+      ]
+    },
+    {
+      "frame": 5,
+      "detections": [
+        {
+          "bbox": [
+            1381,
+            450,
+            1569,
+            891
+          ],
+          "depth": 3.04,
+          "class": "person",
+          "confidence": 0.8096909523010254,
+          "heuristic": "size_position_based"
+        }
+      ]
+    },
+    {
+      "frame": 10,
+      "detections": [
+        {
+          "bbox": [
+            945,
+            396,
+            1136,
+            567
+          ],
+          "depth": 6.109999999999999,
+          "class": "bus",
+          "confidence": 0.5389270782470703,
+          "heuristic": "size_position_based"
+        }
+      ]
+    },
+    {
+      "frame": 20,
+      "detections": [
+        {
+          "bbox": [
+            279,
+            343,
+            334,
+            428
+          ],
+          "depth": 5.097777777777778,
+          "class": "traffic light",
+          "confidence": 0.5259034037590027,
+          "heuristic": "size_position_based"
+        }
+      ]
+    },
+    {
+      "frame": 25,
+      "detections": [
+        {
+          "bbox": [
+            571,
+            466,
+            810,
+            638
+          ],
+          "depth": 5.873333333333333,
+          "class": "truck",
+          "confidence": 0.40666061639785767,
+          "heuristic": "size_position_based"
+        }
+      ]
+    },
+    {
+      "frame": 35,
+      "detections": [
+        {
+          "bbox": [
+            2,
+            505,
+            348,
+            622
+          ],
+          "depth": 5.926666666666667,
+          "class": "car",
+          "confidence": 0.48621267080307007,
+          "heuristic": "size_position_based"
+        }
+      ]
+    }
+  ],
+  "cam_back_5.mp4": [
+    {
+      "frame": 0,
+      "detections": [
+        {
+          "bbox": [
+            730,
+            491,
+            771,
+            521
+          ],
+          "depth": 12.105555555555556,
+          "class": "car",
+          "confidence": 0.6592393517494202,
+          "heuristic": "size_position_based"
+        }
+      ]
+    },
+    {
+      "frame": 5,
+      "detections": [
+        {
+          "bbox": [
+            736,
+            499,
+            777,
+            531
+          ],
+          "depth": 12.05,
+          "class": "car",
+          "confidence": 0.6624295711517334,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            475,
+            499,
+            552,
+            546
+          ],
+          "depth": 11.966666666666667,
+          "class": "car",
+          "confidence": 0.43476176261901855,
+          "heuristic": "size_position_based"
+        }
+      ]
+    },
+    {
+      "frame": 10,
+      "detections": [
+        {
+          "bbox": [
+            732,
+            487,
+            792,
+            529
+          ],
+          "depth": 12.061111111111112,
+          "class": "car",
+          "confidence": 0.649313747882843,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            813,
+            480,
+            854,
+            515
+          ],
+          "depth": 12.13888888888889,
+          "class": "car",
+          "confidence": 0.621253490447998,
+          "heuristic": "size_position_based"
+        }
+      ]
+    },
+    {
+      "frame": 15,
+      "detections": [
+        {
+          "bbox": [
+            701,
+            496,
+            778,
+            551
+          ],
+          "depth": 11.938888888888888,
+          "class": "car",
+          "confidence": 0.6830194592475891,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            633,
+            489,
+            670,
+            518
+          ],
+          "depth": 12.122222222222222,
+          "class": "car",
+          "confidence": 0.6759933829307556,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            806,
+            489,
+            853,
+            529
+          ],
+          "depth": 12.061111111111112,
+          "class": "car",
+          "confidence": 0.5790484547615051,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            548,
+            491,
+            603,
+            531
+          ],
+          "depth": 12.05,
+          "class": "car",
+          "confidence": 0.5049265027046204,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            415,
+            496,
+            535,
+            553
+          ],
+          "depth": 11.927777777777777,
+          "class": "car",
+          "confidence": 0.4227822721004486,
+          "heuristic": "size_position_based"
+        }
+      ]
+    },
+    {
+      "frame": 20,
+      "detections": [
+        {
+          "bbox": [
+            621,
+            496,
+            747,
+            579
+          ],
+          "depth": 11.783333333333333,
+          "class": "car",
+          "confidence": 0.7139936089515686,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            791,
+            480,
+            843,
+            526
+          ],
+          "depth": 12.077777777777778,
+          "class": "car",
+          "confidence": 0.5623443126678467,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            500,
+            491,
+            631,
+            551
+          ],
+          "depth": 11.938888888888888,
+          "class": "car",
+          "confidence": 0.5455141067504883,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            725,
+            490,
+            777,
+            526
+          ],
+          "depth": 12.077777777777778,
+          "class": "car",
+          "confidence": 0.426289826631546,
+          "heuristic": "size_position_based"
+        }
+      ]
+    },
+    {
+      "frame": 25,
+      "detections": [
+        {
+          "bbox": [
+            416,
+            491,
+            679,
+            645
+          ],
+          "depth": 5.85,
+          "class": "car",
+          "confidence": 0.8249513506889343,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            692,
+            485,
+            764,
+            538
+          ],
+          "depth": 12.011111111111111,
+          "class": "car",
+          "confidence": 0.7168950438499451,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            808,
+            483,
+            860,
+            526
+          ],
+          "depth": 12.077777777777778,
+          "class": "car",
+          "confidence": 0.4629109799861908,
+          "heuristic": "size_position_based"
+        }
+      ]
+    },
+    {
+      "frame": 30,
+      "detections": [
+        {
+          "bbox": [
+            0,
+            536,
+            353,
+            892
+          ],
+          "depth": 3.017777777777778,
+          "class": "car",
+          "confidence": 0.8955374956130981,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            601,
+            497,
+            729,
+            579
+          ],
+          "depth": 11.783333333333333,
+          "class": "car",
+          "confidence": 0.829928457736969,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            355,
+            507,
+            483,
+            557
+          ],
+          "depth": 11.905555555555555,
+          "class": "car",
+          "confidence": 0.6719773411750793,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            802,
+            490,
+            856,
+            530
+          ],
+          "depth": 12.055555555555555,
+          "class": "car",
+          "confidence": 0.5986575484275818,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            135,
+            516,
+            345,
+            589
+          ],
+          "depth": 11.727777777777778,
+          "class": "car",
+          "confidence": 0.5022108554840088,
+          "heuristic": "size_position_based"
+        }
+      ]
+    },
+    {
+      "frame": 35,
+      "detections": [
+        {
+          "bbox": [
+            477,
+            505,
+            684,
+            643
+          ],
+          "depth": 5.8566666666666665,
+          "class": "car",
+          "confidence": 0.819273829460144,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            806,
+            496,
+            860,
+            536
+          ],
+          "depth": 12.022222222222222,
+          "class": "car",
+          "confidence": 0.5996360182762146,
+          "heuristic": "size_position_based"
+        }
+      ]
+    }
+  ],
+  "cam_back_5_adas.mp4": [
+    {
+      "frame": 0,
+      "detections": [
+        {
+          "bbox": [
+            730,
+            491,
+            771,
+            521
+          ],
+          "depth": 12.105555555555556,
+          "class": "car",
+          "confidence": 0.6516134142875671,
+          "heuristic": "size_position_based"
+        }
+      ]
+    },
+    {
+      "frame": 5,
+      "detections": [
+        {
+          "bbox": [
+            736,
+            499,
+            777,
+            530
+          ],
+          "depth": 12.055555555555555,
+          "class": "car",
+          "confidence": 0.6162862777709961,
+          "heuristic": "size_position_based"
+        }
+      ]
+    },
+    {
+      "frame": 25,
+      "detections": [
+        {
+          "bbox": [
+            418,
+            494,
+            682,
+            647
+          ],
+          "depth": 5.843333333333334,
+          "class": "car",
+          "confidence": 0.6633962392807007,
+          "heuristic": "size_position_based"
+        }
+      ]
+    },
+    {
+      "frame": 35,
+      "detections": [
+        {
+          "bbox": [
+            476,
+            500,
+            692,
+            644
+          ],
+          "depth": 5.8533333333333335,
+          "class": "bus",
+          "confidence": 0.6124551892280579,
+          "heuristic": "size_position_based"
+        }
+      ]
+    }
+  ],
+  "cam_back_6.mp4": [
+    {
+      "frame": 0,
+      "detections": [
+        {
+          "bbox": [
+            390,
+            399,
+            606,
+            570
+          ],
+          "depth": 6.1,
+          "class": "bus",
+          "confidence": 0.8071072697639465,
+          "heuristic": "size_position_based"
+        }
+      ]
+    },
+    {
+      "frame": 5,
+      "detections": [
+        {
+          "bbox": [
+            1,
+            379,
+            566,
+            602
+          ],
+          "depth": 3.6622222222222223,
+          "class": "bus",
+          "confidence": 0.9259698390960693,
+          "heuristic": "size_position_based"
+        }
+      ]
+    },
+    {
+      "frame": 10,
+      "detections": [
+        {
+          "bbox": [
+            494,
+            409,
+            967,
+            579
+          ],
+          "depth": 3.7133333333333334,
+          "class": "bus",
+          "confidence": 0.9363015294075012,
+          "heuristic": "size_position_based"
+        }
+      ]
+    },
+    {
+      "frame": 15,
+      "detections": [
+        {
+          "bbox": [
+            384,
+            414,
+            778,
+            588
+          ],
+          "depth": 3.6933333333333334,
+          "class": "bus",
+          "confidence": 0.8554322123527527,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            1462,
+            415,
+            1545,
+            622
+          ],
+          "depth": 4.235555555555555,
+          "class": "person",
+          "confidence": 0.6326285600662231,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            935,
+            487,
+            968,
+            586
+          ],
+          "depth": 4.395555555555555,
+          "class": "person",
+          "confidence": 0.6250758767127991,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            1305,
+            463,
+            1369,
+            639
+          ],
+          "depth": 4.16,
+          "class": "person",
+          "confidence": 0.5989543795585632,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            989,
+            474,
+            1025,
+            586
+          ],
+          "depth": 4.395555555555555,
+          "class": "person",
+          "confidence": 0.541567862033844,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            964,
+            508,
+            990,
+            584
+          ],
+          "depth": 4.404444444444445,
+          "class": "person",
+          "confidence": 0.5376051068305969,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            1370,
+            444,
+            1448,
+            617
+          ],
+          "depth": 4.257777777777777,
+          "class": "person",
+          "confidence": 0.45112860202789307,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            1060,
+            482,
+            1096,
+            588
+          ],
+          "depth": 4.386666666666667,
+          "class": "person",
+          "confidence": 0.4168144762516022,
+          "heuristic": "size_position_based"
+        }
+      ]
+    },
+    {
+      "frame": 20,
+      "detections": [
+        {
+          "bbox": [
+            0,
+            350,
+            361,
+            554
+          ],
+          "depth": 3.768888888888889,
+          "class": "bus",
+          "confidence": 0.7390543818473816,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            436,
+            447,
+            463,
+            522
+          ],
+          "depth": 4.68,
+          "class": "person",
+          "confidence": 0.4948473572731018,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            1454,
+            496,
+            1599,
+            579
+          ],
+          "depth": 11.783333333333333,
+          "class": "car",
+          "confidence": 0.4143974483013153,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            622,
+            477,
+            645,
+            547
+          ],
+          "depth": 4.568888888888889,
+          "class": "person",
+          "confidence": 0.4140840470790863,
+          "heuristic": "size_position_based"
+        }
+      ]
+    },
+    {
+      "frame": 25,
+      "detections": [
+        {
+          "bbox": [
+            1169,
+            481,
+            1539,
+            613
+          ],
+          "depth": 5.956666666666667,
+          "class": "car",
+          "confidence": 0.8930608630180359,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            0,
+            483,
+            374,
+            787
+          ],
+          "depth": 3.2511111111111113,
+          "class": "car",
+          "confidence": 0.8682591915130615,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            1046,
+            485,
+            1175,
+            553
+          ],
+          "depth": 11.927777777777777,
+          "class": "car",
+          "confidence": 0.7589802742004395,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            470,
+            492,
+            688,
+            582
+          ],
+          "depth": 11.766666666666667,
+          "class": "car",
+          "confidence": 0.6521399617195129,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            225,
+            487,
+            585,
+            614
+          ],
+          "depth": 5.953333333333333,
+          "class": "car",
+          "confidence": 0.6416745781898499,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            218,
+            515,
+            520,
+            668
+          ],
+          "depth": 5.773333333333333,
+          "class": "car",
+          "confidence": 0.5918554663658142,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            1095,
+            488,
+            1284,
+            564
+          ],
+          "depth": 11.866666666666667,
+          "class": "car",
+          "confidence": 0.5794408321380615,
+          "heuristic": "size_position_based"
+        }
+      ]
+    },
+    {
+      "frame": 30,
+      "detections": [
+        {
+          "bbox": [
+            0,
+            483,
+            286,
+            752
+          ],
+          "depth": 3.328888888888889,
+          "class": "car",
+          "confidence": 0.8700596690177917,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            166,
+            491,
+            515,
+            623
+          ],
+          "depth": 5.923333333333334,
+          "class": "car",
+          "confidence": 0.8521739840507507,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            953,
+            489,
+            1059,
+            541
+          ],
+          "depth": 11.994444444444444,
+          "class": "car",
+          "confidence": 0.7247464060783386,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            434,
+            485,
+            606,
+            588
+          ],
+          "depth": 11.733333333333334,
+          "class": "car",
+          "confidence": 0.7146521806716919,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            1208,
+            502,
+            1600,
+            639
+          ],
+          "depth": 3.58,
+          "class": "car",
+          "confidence": 0.6920516490936279,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            531,
+            484,
+            673,
+            557
+          ],
+          "depth": 11.905555555555555,
+          "class": "car",
+          "confidence": 0.6204689145088196,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            1113,
+            479,
+            1349,
+            610
+          ],
+          "depth": 5.966666666666667,
+          "class": "car",
+          "confidence": 0.5818039178848267,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            1031,
+            488,
+            1166,
+            563
+          ],
+          "depth": 11.872222222222222,
+          "class": "car",
+          "confidence": 0.5361857414245605,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            528,
+            487,
+            643,
+            562
+          ],
+          "depth": 11.877777777777778,
+          "class": "car",
+          "confidence": 0.42518770694732666,
+          "heuristic": "size_position_based"
+        }
+      ]
+    },
+    {
+      "frame": 35,
+      "detections": [
+        {
+          "bbox": [
+            634,
+            482,
+            817,
+            554
+          ],
+          "depth": 11.922222222222222,
+          "class": "car",
+          "confidence": 0.9021896123886108,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            0,
+            485,
+            342,
+            766
+          ],
+          "depth": 3.2977777777777777,
+          "class": "car",
+          "confidence": 0.889255166053772,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            430,
+            494,
+            723,
+            594
+          ],
+          "depth": 6.02,
+          "class": "car",
+          "confidence": 0.8695545196533203,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            1299,
+            443,
+            1599,
+            633
+          ],
+          "depth": 3.5933333333333333,
+          "class": "truck",
+          "confidence": 0.7644879817962646,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            1132,
+            476,
+            1237,
+            536
+          ],
+          "depth": 12.022222222222222,
+          "class": "car",
+          "confidence": 0.6791101098060608,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            744,
+            484,
+            845,
+            537
+          ],
+          "depth": 12.016666666666666,
+          "class": "car",
+          "confidence": 0.6494531035423279,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            1074,
+            476,
+            1132,
+            511
+          ],
+          "depth": 12.161111111111111,
+          "class": "car",
+          "confidence": 0.5401796698570251,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            821,
+            480,
+            902,
+            522
+          ],
+          "depth": 12.1,
+          "class": "car",
+          "confidence": 0.4194498658180237,
+          "heuristic": "size_position_based"
+        }
+      ]
+    },
+    {
+      "frame": 40,
+      "detections": [
+        {
+          "bbox": [
+            1030,
+            453,
+            1244,
+            551
+          ],
+          "depth": 6.163333333333333,
+          "class": "car",
+          "confidence": 0.8934651017189026,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            832,
+            459,
+            1027,
+            567
+          ],
+          "depth": 6.109999999999999,
+          "class": "car",
+          "confidence": 0.8818134069442749,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            1275,
+            463,
+            1499,
+            544
+          ],
+          "depth": 11.977777777777778,
+          "class": "car",
+          "confidence": 0.8430827260017395,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            284,
+            439,
+            354,
+            482
+          ],
+          "depth": 12.322222222222223,
+          "class": "car",
+          "confidence": 0.8215643167495728,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            1445,
+            456,
+            1599,
+            530
+          ],
+          "depth": 12.055555555555555,
+          "class": "car",
+          "confidence": 0.7762168645858765,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            69,
+            431,
+            153,
+            481
+          ],
+          "depth": 12.327777777777778,
+          "class": "car",
+          "confidence": 0.7447625994682312,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            617,
+            443,
+            726,
+            505
+          ],
+          "depth": 12.194444444444445,
+          "class": "car",
+          "confidence": 0.676945149898529,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            964,
+            454,
+            1038,
+            506
+          ],
+          "depth": 12.18888888888889,
+          "class": "car",
+          "confidence": 0.45368683338165283,
+          "heuristic": "size_position_based"
+        }
+      ]
+    }
+  ],
+  "cam_back_6_adas.mp4": [
+    {
+      "frame": 0,
+      "detections": [
+        {
+          "bbox": [
+            384,
+            378,
+            611,
+            576
+          ],
+          "depth": 6.08,
+          "class": "bus",
+          "confidence": 0.8075414299964905,
+          "heuristic": "size_position_based"
+        }
+      ]
+    },
+    {
+      "frame": 5,
+      "detections": [
+        {
+          "bbox": [
+            2,
+            370,
+            571,
+            602
+          ],
+          "depth": 3.6622222222222223,
+          "class": "bus",
+          "confidence": 0.9155880808830261,
+          "heuristic": "size_position_based"
+        }
+      ]
+    },
+    {
+      "frame": 10,
+      "detections": [
+        {
+          "bbox": [
+            491,
+            404,
+            972,
+            579
+          ],
+          "depth": 3.7133333333333334,
+          "class": "bus",
+          "confidence": 0.9280996322631836,
+          "heuristic": "size_position_based"
+        }
+      ]
+    },
+    {
+      "frame": 15,
+      "detections": [
+        {
+          "bbox": [
+            384,
+            400,
+            782,
+            586
+          ],
+          "depth": 3.6977777777777776,
+          "class": "bus",
+          "confidence": 0.8806620240211487,
+          "heuristic": "size_position_based"
+        }
+      ]
+    },
+    {
+      "frame": 20,
+      "detections": [
+        {
+          "bbox": [
+            1,
+            343,
+            368,
+            558
+          ],
+          "depth": 3.76,
+          "class": "bus",
+          "confidence": 0.8160218000411987,
+          "heuristic": "size_position_based"
+        }
+      ]
+    },
+    {
+      "frame": 25,
+      "detections": [
+        {
+          "bbox": [
+            1040,
+            456,
+            1545,
+            614
+          ],
+          "depth": 3.6355555555555554,
+          "class": "truck",
+          "confidence": 0.5408509373664856,
+          "heuristic": "size_position_based"
+        }
+      ]
+    },
+    {
+      "frame": 30,
+      "detections": [
+        {
+          "bbox": [
+            3,
+            489,
+            279,
+            754
+          ],
+          "depth": 3.3244444444444445,
+          "class": "car",
+          "confidence": 0.6520523428916931,
+          "heuristic": "size_position_based"
+        }
+      ]
+    },
+    {
+      "frame": 40,
+      "detections": [
+        {
+          "bbox": [
+            829,
+            462,
+            1028,
+            562
+          ],
+          "depth": 11.877777777777778,
+          "class": "car",
+          "confidence": 0.483104944229126,
+          "heuristic": "size_position_based"
+        }
+      ]
+    }
+  ],
+  "cam_back_7.mp4": [
+    {
+      "frame": 0,
+      "detections": [
+        {
+          "bbox": [
+            622,
+            501,
+            879,
+            637
+          ],
+          "depth": 5.876666666666667,
+          "class": "car",
+          "confidence": 0.7865787744522095,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            866,
+            519,
+            1053,
+            610
+          ],
+          "depth": 11.61111111111111,
+          "class": "car",
+          "confidence": 0.5131178498268127,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            1022,
+            513,
+            1104,
+            568
+          ],
+          "depth": 11.844444444444445,
+          "class": "car",
+          "confidence": 0.41873496770858765,
+          "heuristic": "size_position_based"
+        }
+      ]
+    },
+    {
+      "frame": 5,
+      "detections": [
+        {
+          "bbox": [
+            795,
+            487,
+            911,
+            540
+          ],
+          "depth": 12.0,
+          "class": "car",
+          "confidence": 0.5906381011009216,
+          "heuristic": "size_position_based"
+        }
+      ]
+    },
+    {
+      "frame": 15,
+      "detections": [
+        {
+          "bbox": [
+            291,
+            503,
+            380,
+            565
+          ],
+          "depth": 11.86111111111111,
+          "class": "car",
+          "confidence": 0.5232266783714294,
+          "heuristic": "size_position_based"
+        }
+      ]
+    },
+    {
+      "frame": 30,
+      "detections": [
+        {
+          "bbox": [
+            421,
+            490,
+            487,
+            539
+          ],
+          "depth": 12.005555555555556,
+          "class": "car",
+          "confidence": 0.4300915002822876,
+          "heuristic": "size_position_based"
+        }
+      ]
+    }
+  ],
+  "cam_back_7_adas.mp4": [
+    {
+      "frame": 0,
+      "detections": [
+        {
+          "bbox": [
+            619,
+            482,
+            979,
+            635
+          ],
+          "depth": 3.5888888888888886,
+          "class": "bus",
+          "confidence": 0.4051184058189392,
+          "heuristic": "size_position_based"
+        }
+      ]
+    },
+    {
+      "frame": 15,
+      "detections": [
+        {
+          "bbox": [
+            284,
+            473,
+            396,
+            607
+          ],
+          "depth": 11.627777777777778,
+          "class": "truck",
+          "confidence": 0.4164220690727234,
+          "heuristic": "size_position_based"
+        }
+      ]
+    },
+    {
+      "frame": 30,
+      "detections": [
+        {
+          "bbox": [
+            416,
+            460,
+            527,
+            589
+          ],
+          "depth": 11.727777777777778,
+          "class": "truck",
+          "confidence": 0.4053935706615448,
+          "heuristic": "size_position_based"
+        }
+      ]
+    }
+  ],
+  "cam_back_8.mp4": [
+    {
+      "frame": 0,
+      "detections": [
+        {
+          "bbox": [
+            1277,
+            469,
+            1350,
+            652
+          ],
+          "depth": 4.102222222222222,
+          "class": "person",
+          "confidence": 0.7692127227783203,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            434,
+            441,
+            813,
+            827
+          ],
+          "depth": 3.1622222222222223,
+          "class": "car",
+          "confidence": 0.7661940455436707,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            1166,
+            473,
+            1230,
+            643
+          ],
+          "depth": 4.142222222222222,
+          "class": "person",
+          "confidence": 0.5255733132362366,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            1401,
+            471,
+            1492,
+            699
+          ],
+          "depth": 3.8933333333333335,
+          "class": "person",
+          "confidence": 0.5210913419723511,
+          "heuristic": "size_position_based"
+        }
+      ]
+    },
+    {
+      "frame": 5,
+      "detections": [
+        {
+          "bbox": [
+            433,
+            439,
+            816,
+            791
+          ],
+          "depth": 3.242222222222222,
+          "class": "car",
+          "confidence": 0.8021703362464905,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            1273,
+            476,
+            1347,
+            651
+          ],
+          "depth": 4.1066666666666665,
+          "class": "person",
+          "confidence": 0.7791299223899841,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            1422,
+            448,
+            1495,
+            696
+          ],
+          "depth": 3.9066666666666667,
+          "class": "person",
+          "confidence": 0.5841292142868042,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            1158,
+            476,
+            1207,
+            630
+          ],
+          "depth": 4.2,
+          "class": "person",
+          "confidence": 0.5020493268966675,
+          "heuristic": "size_position_based"
+        }
+      ]
+    },
+    {
+      "frame": 10,
+      "detections": [
+        {
+          "bbox": [
+            429,
+            440,
+            810,
+            793
+          ],
+          "depth": 3.2377777777777776,
+          "class": "car",
+          "confidence": 0.7696990370750427,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            1265,
+            478,
+            1328,
+            648
+          ],
+          "depth": 4.12,
+          "class": "person",
+          "confidence": 0.7664780020713806,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            1143,
+            477,
+            1188,
+            624
+          ],
+          "depth": 4.226666666666667,
+          "class": "person",
+          "confidence": 0.6520599126815796,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            897,
+            505,
+            936,
+            600
+          ],
+          "depth": 4.333333333333334,
+          "class": "person",
+          "confidence": 0.5608785152435303,
+          "heuristic": "size_position_based"
+        }
+      ]
+    },
+    {
+      "frame": 15,
+      "detections": [
+        {
+          "bbox": [
+            1259,
+            480,
+            1325,
+            649
+          ],
+          "depth": 4.115555555555556,
+          "class": "person",
+          "confidence": 0.7731767892837524,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            433,
+            441,
+            805,
+            773
+          ],
+          "depth": 3.282222222222222,
+          "class": "car",
+          "confidence": 0.753703773021698,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            1136,
+            492,
+            1186,
+            626
+          ],
+          "depth": 4.217777777777778,
+          "class": "person",
+          "confidence": 0.7082871198654175,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            1317,
+            468,
+            1379,
+            654
+          ],
+          "depth": 4.093333333333334,
+          "class": "person",
+          "confidence": 0.40357521176338196,
+          "heuristic": "size_position_based"
+        }
+      ]
+    },
+    {
+      "frame": 20,
+      "detections": [
+        {
+          "bbox": [
+            1221,
+            478,
+            1280,
+            643
+          ],
+          "depth": 4.142222222222222,
+          "class": "person",
+          "confidence": 0.719737708568573,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            423,
+            441,
+            804,
+            789
+          ],
+          "depth": 3.2466666666666666,
+          "class": "car",
+          "confidence": 0.6752026677131653,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            1104,
+            475,
+            1150,
+            619
+          ],
+          "depth": 4.248888888888889,
+          "class": "person",
+          "confidence": 0.5875084400177002,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            1268,
+            482,
+            1323,
+            649
+          ],
+          "depth": 4.115555555555556,
+          "class": "person",
+          "confidence": 0.5788326263427734,
+          "heuristic": "size_position_based"
+        }
+      ]
+    },
+    {
+      "frame": 25,
+      "detections": [
+        {
+          "bbox": [
+            406,
+            440,
+            772,
+            747
+          ],
+          "depth": 3.34,
+          "class": "car",
+          "confidence": 0.777115523815155,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            1110,
+            484,
+            1161,
+            630
+          ],
+          "depth": 4.2,
+          "class": "person",
+          "confidence": 0.709877610206604,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            135,
+            480,
+            198,
+            672
+          ],
+          "depth": 4.013333333333334,
+          "class": "person",
+          "confidence": 0.6516253352165222,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            1011,
+            486,
+            1051,
+            614
+          ],
+          "depth": 4.271111111111111,
+          "class": "person",
+          "confidence": 0.6398763656616211,
+          "heuristic": "size_position_based"
+        }
+      ]
+    },
+    {
+      "frame": 30,
+      "detections": [
+        {
+          "bbox": [
+            403,
+            438,
+            780,
+            782
+          ],
+          "depth": 3.2622222222222224,
+          "class": "car",
+          "confidence": 0.8007257580757141,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            1109,
+            479,
+            1162,
+            632
+          ],
+          "depth": 4.191111111111111,
+          "class": "person",
+          "confidence": 0.7449671030044556,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            141,
+            482,
+            195,
+            647
+          ],
+          "depth": 4.124444444444444,
+          "class": "person",
+          "confidence": 0.700960636138916,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            1008,
+            483,
+            1053,
+            613
+          ],
+          "depth": 4.275555555555556,
+          "class": "person",
+          "confidence": 0.6763003468513489,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            1150,
+            483,
+            1190,
+            633
+          ],
+          "depth": 4.1866666666666665,
+          "class": "person",
+          "confidence": 0.557050347328186,
+          "heuristic": "size_position_based"
+        }
+      ]
+    },
+    {
+      "frame": 35,
+      "detections": [
+        {
+          "bbox": [
+            404,
+            438,
+            779,
+            784
+          ],
+          "depth": 3.257777777777778,
+          "class": "car",
+          "confidence": 0.7721127271652222,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            1011,
+            482,
+            1054,
+            615
+          ],
+          "depth": 4.266666666666667,
+          "class": "person",
+          "confidence": 0.693208634853363,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            144,
+            492,
+            196,
+            647
+          ],
+          "depth": 4.124444444444444,
+          "class": "person",
+          "confidence": 0.6886127591133118,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            1116,
+            487,
+            1163,
+            632
+          ],
+          "depth": 4.191111111111111,
+          "class": "person",
+          "confidence": 0.4499098062515259,
+          "heuristic": "size_position_based"
+        }
+      ]
+    }
+  ],
+  "cam_back_8_adas.mp4": [
+    {
+      "frame": 0,
+      "detections": [
+        {
+          "bbox": [
+            425,
+            426,
+            826,
+            872
+          ],
+          "depth": 3.062222222222222,
+          "class": "truck",
+          "confidence": 0.4717044532299042,
+          "heuristic": "size_position_based"
+        }
+      ]
+    },
+    {
+      "frame": 5,
+      "detections": [
+        {
+          "bbox": [
+            427,
+            425,
+            825,
+            801
+          ],
+          "depth": 3.2199999999999998,
+          "class": "truck",
+          "confidence": 0.4312889575958252,
+          "heuristic": "size_position_based"
+        }
+      ]
+    },
+    {
+      "frame": 10,
+      "detections": [
+        {
+          "bbox": [
+            424,
+            429,
+            822,
+            866
+          ],
+          "depth": 3.075555555555556,
+          "class": "truck",
+          "confidence": 0.5550739765167236,
+          "heuristic": "size_position_based"
+        }
+      ]
+    },
+    {
+      "frame": 15,
+      "detections": [
+        {
+          "bbox": [
+            426,
+            429,
+            813,
+            788
+          ],
+          "depth": 3.2488888888888887,
+          "class": "car",
+          "confidence": 0.47181499004364014,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            1264,
+            10,
+            1593,
+            257
+          ],
+          "depth": 5.857777777777778,
+          "class": "traffic light",
+          "confidence": 0.4410167634487152,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            425,
+            428,
+            811,
+            787
+          ],
+          "depth": 3.2511111111111113,
+          "class": "truck",
+          "confidence": 0.40960103273391724,
+          "heuristic": "size_position_based"
+        }
+      ]
+    },
+    {
+      "frame": 20,
+      "detections": [
+        {
+          "bbox": [
+            414,
+            419,
+            811,
+            855
+          ],
+          "depth": 3.1,
+          "class": "truck",
+          "confidence": 0.5469101667404175,
+          "heuristic": "size_position_based"
+        }
+      ]
+    },
+    {
+      "frame": 25,
+      "detections": [
+        {
+          "bbox": [
+            396,
+            423,
+            782,
+            816
+          ],
+          "depth": 3.1866666666666665,
+          "class": "truck",
+          "confidence": 0.48221078515052795,
+          "heuristic": "size_position_based"
+        }
+      ]
+    },
+    {
+      "frame": 35,
+      "detections": [
+        {
+          "bbox": [
+            395,
+            418,
+            785,
+            853
+          ],
+          "depth": 3.1044444444444443,
+          "class": "truck",
+          "confidence": 0.4103316366672516,
+          "heuristic": "size_position_based"
+        }
+      ]
+    }
+  ],
+  "cam_back_9.mp4": [
+    {
+      "frame": 5,
+      "detections": [
+        {
+          "bbox": [
+            1019,
+            460,
+            1082,
+            622
+          ],
+          "depth": 4.235555555555555,
+          "class": "person",
+          "confidence": 0.7652578353881836,
+          "heuristic": "size_position_based"
+        }
+      ]
+    },
+    {
+      "frame": 15,
+      "detections": [
+        {
+          "bbox": [
+            0,
+            415,
+            133,
+            571
+          ],
+          "depth": 6.096666666666667,
+          "class": "car",
+          "confidence": 0.6319093704223633,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            648,
+            410,
+            677,
+            457
+          ],
+          "depth": 4.968888888888889,
+          "class": "traffic light",
+          "confidence": 0.5122465491294861,
+          "heuristic": "size_position_based"
+        }
+      ]
+    },
+    {
+      "frame": 25,
+      "detections": [
+        {
+          "bbox": [
+            424,
+            506,
+            494,
+            542
+          ],
+          "depth": 11.988888888888889,
+          "class": "car",
+          "confidence": 0.5113534331321716,
+          "heuristic": "size_position_based"
+        }
+      ]
+    }
+  ],
+  "cam_back_9_adas.mp4": [
+    {
+      "frame": 15,
+      "detections": [
+        {
+          "bbox": [
+            648,
+            412,
+            678,
+            457
+          ],
+          "depth": 4.968888888888889,
+          "class": "traffic light",
+          "confidence": 0.5397724509239197,
+          "heuristic": "size_position_based"
+        },
+        {
+          "bbox": [
+            0,
+            386,
+            143,
+            573
+          ],
+          "depth": 6.09,
+          "class": "truck",
+          "confidence": 0.4457714855670929,
+          "heuristic": "size_position_based"
+        }
+      ]
+    },
+    {
+      "frame": 25,
+      "detections": [
+        {
+          "bbox": [
+            1069,
+            487,
+            1114,
+            514
+          ],
+          "depth": 12.144444444444444,
+          "class": "car",
+          "confidence": 0.40736815333366394,
+          "heuristic": "size_position_based"
+        }
+      ]
+    }
+  ]
+}

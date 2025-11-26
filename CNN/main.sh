@@ -5,7 +5,8 @@
 
 PYTHON="/home/atul/Desktop/atul/rear_view_adas_monocular/.venv/bin/python"
 CNN_DIR="/home/atul/Desktop/atul/rear_view_adas_monocular/CNN"
-MODEL="$CNN_DIR/checkpoints/transfer_resnet18/best_model.pth"
+# Use mobilenet_inspired model (15 classes, 89.11% accuracy)
+MODEL="$CNN_DIR/checkpoints/mobilenet_inspired/best_model.pth"
 export PYTHONPATH="$CNN_DIR:$PYTHONPATH"
 
 clear

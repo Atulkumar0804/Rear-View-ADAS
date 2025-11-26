@@ -75,3 +75,11 @@ checkpoints/*/epoch_*.pth
 *.bak
 *.swp
 temp/
+
+# User excluded folders
+CNN/dataset/
+CNN/dataset_downloads/
+extra/
+
+# Large model files
+CNN/depth_estimation/finetuned_model/
