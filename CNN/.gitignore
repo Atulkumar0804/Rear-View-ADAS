@@ -90,3 +90,29 @@ htmlcov/
 .vscode/settings.json
 .vscode/launch.json
 .vscode/extensions.json
+
+# Local Claude Code settings
+.claude/
+
+# Testing data (videos too large for GitHub)
+testing_data/
+
+# PDF files (generated figures, paper drafts)
+*.pdf
+
+# LaTeX source files (academic drafts)
+*.tex
+
+# Paper figure generation script
+generate_paper_figures.py
+
+# Model weight files (large binaries — download separately)
+*.safetensors
+*.data
+
+# ZoeDepth and MiDaS source copies (third-party repos, not part of this project)
+models/zoedepth/
+
+# Training checkpoints (intermediate artifacts, not final models)
+models/depth_anything_v2_finetuned/checkpoint-*/
+models/depth_anything_v2_finetuned/training_args.bin
