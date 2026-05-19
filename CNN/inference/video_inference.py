@@ -78,8 +78,7 @@ except ImportError:
     except ImportError:
         _DEPTH_LITE_AVAILABLE = False
 
-# Use YOLOv11 from models folder
-YOLO_MODEL_PATH = str(CNN_DIR / "models/yolo/yolo11x-seg.pt")
+YOLO_MODEL_PATH = "yolo11n.pt"
 
 
 # ============================================================================
@@ -1243,26 +1242,26 @@ class VideoDetector:
                  correction_alpha=0.3, learnable_alpha=True,
                  alpha_lr=0.05, classical_depth_weight=0.80, fps=30):
         self.device = torch.device(device if torch.cuda.is_available() else 'cpu')
-        print(f"🔥 Device: {self.device}")
+        print(f"Device: {self.device}")
         self.fps = fps
         # Load YOLO
-        print("📦 Loading YOLO...")
+        print(f"Loading YOLO: {YOLO_MODEL_PATH} ...")
         self.yolo = YOLO(YOLO_MODEL_PATH)
-        print("✅ YOLO loaded")
+        print("YOLO loaded")
         # Load Fine-tuned Classifier
         CLASSIFIER_PATH = str(CNN_DIR / "models/classifier/weights/best.pt")
-        print(f"📦 Loading Classifier: {CLASSIFIER_PATH}")
+        print(f"Loading Classifier: {CLASSIFIER_PATH} ...")
         self.classifier = YOLO(CLASSIFIER_PATH)
-        print("✅ Classifier loaded")
+        print("Classifier loaded")
         
         # Initialize ByteTracker (replaces IoU-based tracking)
         if _BYTE_TRACKER_AVAILABLE:
-            print("📦 Initializing ByteTracker...")
+            print("Initializing ByteTracker...")
             self.tracker = ByteTracker(track_buffer=300, frame_rate=int(fps))
             self.use_byte_tracker = True
-            print("✅ ByteTracker initialized (motion-aware tracking enabled)")
+            print("ByteTracker initialized")
         else:
-            print("⚠️  ByteTracker not available, falling back to IoU tracking")
+            print("ByteTracker not available, falling back to IoU tracking")
             self.tracker = None
             self.use_byte_tracker = False
         
@@ -1309,16 +1308,23 @@ class VideoDetector:
         
         # Initialize Dynamic Horizon Estimator (adapts to camera suspension movement)
         self.horizon_estimator = DynamicHorizonEstimator(
-            frame_width=1920, 
+            frame_width=1920,
             frame_height=1080,
-            ema_alpha=0.15,  # Smooth EMA (15% new, 85% previous)
-            fallback_ratio=0.55  # Fallback to fixed horizon
+            ema_alpha=0.15,
+            fallback_ratio=0.55
         )
-        print("✅ Dynamic Horizon Estimator initialized (adapts to suspension movement)")
-        
+        print("Dynamic Horizon Estimator initialized")
+
         self.rider_action_recommender = RiderActionRecommendation()
-        self.safety_assessments_cache = {}  # track_id -> safety assessment dict
+        self.safety_assessments_cache = {}
         self.last_scenario_validation = None
+
+        # Performance: throttled expensive operations
+        self._frame_count_internal = 0
+        self._horizon_interval = 15          # recompute horizon every N frames
+        self._horizon_cache    = (None, None)
+        self._cls_cache        = {}          # track_id -> (class, conf, frame_num)
+        self._cls_interval     = 5           # re-classify per track every N frames
 
     def _estimate_ground_plane_depth(self, bbox, frame_h, y_horizon=None):
         """
@@ -1456,18 +1462,13 @@ class VideoDetector:
         return float(np.clip(distance_smooth, DEPTH_CLIP_MIN_M, DEPTH_CLIP_MAX_M))
     
     def validate_distance_range(self, distance_m, class_name):
-        """(NEW) Check if distance is within realistic range for rear-view camera"""
+        """Check if distance is within realistic range for rear-view camera"""
         min_range, max_range = TYPICAL_DISTANCE_RANGES.get(class_name, (0.5, 100))
-        
         if distance_m < min_range:
-            print(f"⚠️  {class_name} at {distance_m:.1f}m below typical range")
-            return min_range, 0.7  # Likely detection artifact
-        
+            return min_range, 0.7
         if distance_m > max_range:
-            print(f"⚠️  {class_name} at {distance_m:.1f}m beyond typical range {max_range}m")
-            return max_range, 0.5  # Extrapolation unreliable
-        
-        return distance_m, 1.0  # Within valid range
+            return max_range, 0.5
+        return distance_m, 1.0
 
     def _estimate_motion_depth(self, track_id, bbox, timestamp_s, frame_shape):
         prev = self.track_motion_state.get(track_id)
@@ -1587,12 +1588,10 @@ class VideoDetector:
                     (1.0 - self.alpha_lr) * self.correction_ema_alpha + self.alpha_lr * alpha_target,
                     self.alpha_min, self.alpha_max,
                 ))
-                if abs(self.correction_ema_alpha - alpha_prev) > 1e-6:
-                    print(f"🧠 Alpha update [track={track_id} class={class_name}] "
-                          f"{alpha_prev:.3f}->{self.correction_ema_alpha:.3f}")
+                pass  # alpha updated silently to avoid per-frame stdout stall
             c_new = self.correction_ema_alpha * c_current + (1.0 - self.correction_ema_alpha) * c_prev
             c_new = float(np.clip(c_new, self.correction_clip_min, self.correction_clip_max))
-            self.track_correction_factors[track_id] = c_new
+            self.track_correction_factors[track_id]   = c_new
             self.class_correction_factors[class_name] = c_new
             updated = True
         z_corr = float(classical_depth) * float(c_new)
@@ -1819,18 +1818,21 @@ class VideoDetector:
         results = []
         current_boxes_raw = []
         ts_now = time.time()
-        
-        # === UPDATE DYNAMIC HORIZON (adapts to suspension movement) ===
-        y_horizon, horizon_conf = self.horizon_estimator.update(frame)
-        if horizon_conf > 0.3:
-            print(f"  🌍 Horizon: y={y_horizon:.1f}px (conf={horizon_conf:.2f})")
-        
-        # YOLO detection
+
+        self._frame_count_internal += 1
+
+        # Throttled horizon estimation: recompute every _horizon_interval frames
+        if self._horizon_cache[0] is None or self._frame_count_internal % self._horizon_interval == 1:
+            y_horizon, horizon_conf = self.horizon_estimator.update(frame)
+            self._horizon_cache = (y_horizon, horizon_conf)
+        else:
+            y_horizon, horizon_conf = self._horizon_cache
+
+        # YOLO detection — classifier deferred until after tracking (enables caching)
         yolo_results = self.yolo(frame, verbose=False)[0]
-        for i, detection in enumerate(yolo_results.boxes.data):
+        for detection in yolo_results.boxes.data:
             x1, y1, x2, y2, conf, cls_id = detection.cpu().numpy()
             cls_id = int(cls_id)
-            mask = None
             if cls_id not in YOLO_CLASS_MAPPING:
                 continue
             yolo_class = YOLO_CLASS_MAPPING[cls_id]
@@ -1842,76 +1844,46 @@ class VideoDetector:
                         'class': yolo_class,
                         'confidence': float(conf),
                         'source': 'YOLO',
-                        'mask': mask
+                        'mask': None,
                     })
                 continue
             if conf >= CONFIDENCE_THRESHOLD:
-                x1, y1, x2, y2 = int(x1), int(y1), int(x2), int(y2)
-                final_class = yolo_class
-                final_conf = float(conf)
-                source = 'YOLO'
-                crop = frame[y1:y2, x1:x2]
-                if crop.size > 0:
-                    crop_area = crop.shape[0] * crop.shape[1]
-                    if crop_area >= self.MIN_CROP_AREA:
-                        try:
-                            cls_results = self.classifier(crop, verbose=False)
-                            if cls_results and len(cls_results) > 0:
-                                top1 = cls_results[0].probs.top1
-                                top1_conf = cls_results[0].probs.top1conf.item()
-                                pred_class = cls_results[0].names[top1]
-                                if top1_conf > 0.4:
-                                    final_class = pred_class
-                                    final_conf = top1_conf
-                                    source = 'YOLO_CLS'
-                        except Exception as e:
-                            print(f"Classifier error: {e}")
-                current_boxes_raw.append([x1, y1, x2, y2])
+                current_boxes_raw.append([int(x1), int(y1), int(x2), int(y2)])
                 results.append({
-                    'bbox': [x1, y1, x2, y2],
-                    'class': final_class,
-                    'confidence': final_conf,
-                    'source': source,
-                    'mask': mask
+                    'bbox': [int(x1), int(y1), int(x2), int(y2)],
+                    'class': yolo_class,
+                    'confidence': float(conf),
+                    'source': 'YOLO',
+                    'mask': None,
                 })
+
         results = self.merge_rider_and_vehicle(results)
         current_boxes_raw = [r['bbox'] for r in results]
-        
-        # Use ByteTracker for improved tracking (motion-aware, occlusion-robust)
+
+        # Tracking first — stable IDs are needed for classifier caching
         matches = []
         if self.use_byte_tracker and self.tracker is not None:
-            # Prepare detections for ByteTracker [x, y, w, h] format
-            tracker_inputs = []
-            for i, r in enumerate(results):
-                x1, y1, x2, y2 = r['bbox']
-                tracker_inputs.append({
-                    'bbox': [x1, y1, x2-x1, y2-y1],  # Convert to [x, y, w, h]
+            tracker_inputs = [
+                {
+                    'bbox': [r['bbox'][0], r['bbox'][1],
+                             r['bbox'][2] - r['bbox'][0], r['bbox'][3] - r['bbox'][1]],
                     'confidence': r['confidence'],
                     'class_name': r['class'],
-                })
-            
-            # Update tracker and get tracked results
+                }
+                for r in results
+            ]
             tracked_results = self.tracker.update(tracker_inputs)
-            
-            # Build match list with track IDs from ByteTracker
-            # tracked_results contains the matched detections with track_ids
-            track_id_list = [t['track_id'] for t in tracked_results]
-            
-            # Ensure we have a track_id for each result
-            # Use the order from tracker which should match the input order
             for i, track_data in enumerate(tracked_results):
                 if i < len(results):
                     results[i]['track_id'] = track_data['track_id']
                     matches.append(track_data['track_id'])
-            
-            # Handle any unmatched detections (shouldn't happen with ByteTracker)
             for i in range(len(tracked_results), len(results)):
                 matches.append(-1)
         else:
-            # Fallback to IoU-based matching (legacy)
-            matches = self.match_detections(current_boxes_raw, self.prev_boxes, iou_threshold=self.IOU_THRESHOLD)
+            matches = self.match_detections(current_boxes_raw, self.prev_boxes,
+                                            iou_threshold=self.IOU_THRESHOLD)
 
-        # --- ML Depth correction (DA2/MIDAS async update) ---
+        # ML Depth (DA2/MIDAS async update)
         self._ml_depth_fresh = False
         depth_map = None
         if self.depth_model is not None:
@@ -1924,17 +1896,49 @@ class VideoDetector:
             elif self.last_zoedepth_depth is not None:
                 depth_map = self.last_zoedepth_depth
 
-        # Assign track IDs and estimate motion
+        # Per-detection: cached classifier, depth, motion
         for i, result in enumerate(results):
-            # Get track_id from ByteTracker (already assigned) or from matches (legacy)
+            # Assign track ID
             if 'track_id' in result:
                 track_id = result['track_id']
             else:
-                # Legacy IoU-based tracking
-                track_id = matches[i] if matches[i] != -1 else self.track_id_counter
-                if matches[i] == -1:
+                track_id = (matches[i] if i < len(matches) and matches[i] != -1
+                            else self.track_id_counter)
+                if i >= len(matches) or matches[i] == -1:
                     self.track_id_counter += 1
                 result['track_id'] = track_id
+
+            cls = result['class']
+
+            # Cached classifier — only for vehicle classes
+            if cls not in ('Person', 'Bicycle', 'Two-wheeler') and 'Person +' not in cls:
+                cached = self._cls_cache.get(track_id)
+                stale  = (cached is None or
+                          (self._frame_count_internal - cached[2]) >= self._cls_interval)
+                if stale:
+                    x1c, y1c, x2c, y2c = result['bbox']
+                    crop = frame[y1c:y2c, x1c:x2c]
+                    refined_cls, refined_conf = cls, float(result['confidence'])
+                    if crop.size > 0 and crop.shape[0] * crop.shape[1] >= self.MIN_CROP_AREA:
+                        try:
+                            cls_r = self.classifier(crop, verbose=False)
+                            if cls_r and len(cls_r) > 0:
+                                top1      = cls_r[0].probs.top1
+                                top1_conf = cls_r[0].probs.top1conf.item()
+                                if top1_conf > 0.4:
+                                    refined_cls  = cls_r[0].names[top1]
+                                    refined_conf = top1_conf
+                                    result['source'] = 'YOLO_CLS'
+                        except Exception:
+                            pass
+                    self._cls_cache[track_id] = (refined_cls, refined_conf,
+                                                 self._frame_count_internal)
+                else:
+                    refined_cls, refined_conf = cached[0], cached[1]
+                    result['source'] = 'CACHE'
+                result['class'] = refined_cls
+                result['confidence'] = refined_conf
+                cls = refined_cls
 
             classical_depth, classical_meta = self.estimate_classical_distance(
                 bbox=result['bbox'],
@@ -2009,11 +2013,16 @@ class VideoDetector:
                 else:
                     result['class'] = stable_class
                     result['confidence'] = float(min(1.0, stable_conf))
+        # Purge stale classifier cache periodically
+        if self._frame_count_internal % 150 == 0:
+            active_ids = {r.get('track_id', -1) for r in results}
+            self._cls_cache = {k: v for k, v in self._cls_cache.items() if k in active_ids}
+
         self.prev_boxes = [{'bbox': r['bbox'], 'track_id': r['track_id']} for r in results]
         active_track_ids = {r['track_id'] for r in results}
         self.track_motion_state = {k: v for k, v in self.track_motion_state.items() if k in active_track_ids}
         return results
-    
+
     def merge_rider_and_vehicle(self, results):
         """
         Merge overlapping 'Person' and 'Two-wheeler'/'Bicycle' detections.
@@ -2211,7 +2220,7 @@ class VideoDetector:
                     if ttc_val is not None:
                         safety_text += f" TTC:{ttc_val:.2f}s"
                     if drac_val is not None and drac_val != float('inf'):
-                        safety_text += f" DRAC:{drac_val:.2f}m/s²"
+                        safety_text += f" DRAC:{drac_val:.2f}m/s2"
                 
                 safety_size, _ = cv2.getTextSize(safety_text, cv2.FONT_HERSHEY_SIMPLEX, 0.5, 1)
                 cv2.rectangle(annotated, (x1, safety_y - safety_size[1] - 5), 
@@ -2238,7 +2247,7 @@ class VideoDetector:
                     
                     # Draw action instruction
                     action_y = safety_y + 25
-                    action_text = f"→ {instruction[:50]}"  # Truncate long text
+                    action_text = f">> {instruction[:50]}"
                     action_size, _ = cv2.getTextSize(action_text, cv2.FONT_HERSHEY_SIMPLEX, 0.5, 1)
                     cv2.rectangle(annotated, (x1, action_y - action_size[1] - 5), 
                                  (x1 + action_size[0] + 10, action_y + 5), urgency_color, -1)
@@ -2422,7 +2431,7 @@ def main():
                        help='Online alpha learning rate (default: 0.05)')
     parser.add_argument('--freeze-alpha', action='store_true',
                        help='Keep alpha fixed (disable online adaptation)')
-    
+
     args = parser.parse_args()
     
     print("\n" + "="*60)

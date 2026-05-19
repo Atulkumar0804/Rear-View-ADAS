@@ -77,8 +77,7 @@ except ImportError:
         _DEPTH_LITE_AVAILABLE = False
 
 # YOLO Models
-YOLO_MODEL_PATH_FAST = "yolo11n.pt"
-YOLO_MODEL_PATH_HEAVY = str(CNN_DIR / "models/yolo/yolo11x-seg.pt")
+YOLO_MODEL_PATH = "yolo11n.pt"
 
 # Configuration
 IMG_SIZE = (224, 224)
@@ -735,7 +734,7 @@ class CameraVehicleDetector:
         
         # Load YOLO (using yolo11n for real-time performance)
         print("📦 Loading YOLO11n (fast model)...")
-        self.yolo = YOLO(YOLO_MODEL_PATH_FAST)
+        self.yolo = YOLO(YOLO_MODEL_PATH)
         print("✅ YOLO11n loaded (optimized for real-time inference)")
         
         # Load Classifier
@@ -796,7 +795,14 @@ class CameraVehicleDetector:
         # Safety assessment cache
         self.safety_assessments_cache = {}
         self.last_scenario_validation = None
-        
+
+        # Performance: throttled expensive operations
+        self._frame_count_internal = 0
+        self._horizon_interval = 10          # recompute horizon every N frames
+        self._horizon_cache = (None, None)   # (y_horizon, confidence)
+        self._cls_cache = {}                 # track_id -> (class, conf, frame_num)
+        self._cls_interval = 5               # re-classify track every N frames
+
         print("✅ All Advanced ADAS Components initialized")
     
     def validate_and_assess_rear_scenario(self, detections, ego_speed_kmh=0.0, frame_shape=None):
@@ -901,153 +907,159 @@ class CameraVehicleDetector:
     def detect_frame(self, frame):
         """Detect vehicles in a single frame"""
         results = []
-        current_boxes_raw = []
-        ts_now = time.time()
         h_frame, w_frame = frame.shape[:2]
-        
-        # Update Dynamic Horizon
-        y_horizon, horizon_conf = self.horizon_estimator.update(frame)
-        
-        # YOLO detection
+
+        self._frame_count_internal += 1
+
+        # Throttled horizon estimation: recompute every _horizon_interval frames only
+        if self._horizon_cache[0] is None or self._frame_count_internal % self._horizon_interval == 1:
+            y_horizon, horizon_conf = self.horizon_estimator.update(frame)
+            self._horizon_cache = (y_horizon, horizon_conf)
+
+        # YOLO detection — classifier is deferred until after tracking (enables caching)
         yolo_results = self.yolo(frame, verbose=False)[0]
-        
-        for i, detection in enumerate(yolo_results.boxes.data):
+
+        for detection in yolo_results.boxes.data:
             x1, y1, x2, y2, conf, cls_id = detection.cpu().numpy()
             cls_id = int(cls_id)
-            mask = None
-            
+
             if cls_id not in YOLO_CLASS_MAPPING:
                 continue
-            
+
             yolo_class = YOLO_CLASS_MAPPING[cls_id]
-            
+
             if yolo_class in ['Person', 'Bicycle', 'Two-wheeler']:
                 if conf >= CONFIDENCE_THRESHOLD:
-                    current_boxes_raw.append([int(x1), int(y1), int(x2), int(y2)])
                     results.append({
                         'bbox': [int(x1), int(y1), int(x2), int(y2)],
                         'class': yolo_class,
                         'confidence': float(conf),
                         'source': 'YOLO',
-                        'mask': mask
+                        'mask': None,
                     })
                 continue
-            
+
             if conf >= CONFIDENCE_THRESHOLD:
-                x1, y1, x2, y2 = int(x1), int(y1), int(x2), int(y2)
-                final_class = yolo_class
-                final_conf = float(conf)
-                source = 'YOLO'
-                
-                crop = frame[y1:y2, x1:x2]
-                
-                if crop.size > 0:
-                    crop_area = crop.shape[0] * crop.shape[1]
-                    if crop_area >= self.MIN_CROP_AREA:
-                        try:
-                            cls_results = self.classifier(crop, verbose=False)
-                            if cls_results and len(cls_results) > 0:
-                                top1 = cls_results[0].probs.top1
-                                top1_conf = cls_results[0].probs.top1conf.item()
-                                pred_class = cls_results[0].names[top1]
-                                if top1_conf > 0.4:
-                                    final_class = pred_class
-                                    final_conf = top1_conf
-                                    source = 'YOLO_CLS'
-                        except Exception as e:
-                            pass
-                
-                current_boxes_raw.append([x1, y1, x2, y2])
                 results.append({
-                    'bbox': [x1, y1, x2, y2],
-                    'class': final_class,
-                    'confidence': final_conf,
-                    'source': source,
-                    'mask': mask
+                    'bbox': [int(x1), int(y1), int(x2), int(y2)],
+                    'class': yolo_class,
+                    'confidence': float(conf),
+                    'source': 'YOLO',
+                    'mask': None,
                 })
-        
-        # Merge rider and vehicle
+
+        # Merge overlapping rider + vehicle detections
         results = self.merge_rider_and_vehicle(results)
         current_boxes_raw = [r['bbox'] for r in results]
-        
-        # Use ByteTracker for tracking
+
+        # Tracking first — stable track IDs are needed for classifier caching
         matches = []
         if self.use_byte_tracker and self.tracker is not None:
-            tracker_inputs = []
-            for i, r in enumerate(results):
-                x1, y1, x2, y2 = r['bbox']
-                tracker_inputs.append({
-                    'bbox': [x1, y1, x2-x1, y2-y1],
+            tracker_inputs = [
+                {
+                    'bbox': [r['bbox'][0], r['bbox'][1],
+                             r['bbox'][2] - r['bbox'][0], r['bbox'][3] - r['bbox'][1]],
                     'confidence': r['confidence'],
                     'class_name': r['class'],
-                })
-            
+                }
+                for r in results
+            ]
             tracked_results = self.tracker.update(tracker_inputs)
-            track_id_list = [t['track_id'] for t in tracked_results]
-            
-            for i, track_data in enumerate(tracked_results):
+            for i, td in enumerate(tracked_results):
                 if i < len(results):
-                    results[i]['track_id'] = track_data['track_id']
-                    matches.append(track_data['track_id'])
-            
+                    results[i]['track_id'] = td['track_id']
+                    matches.append(td['track_id'])
             for i in range(len(tracked_results), len(results)):
                 matches.append(-1)
         else:
-            matches = self.match_detections(current_boxes_raw, self.prev_boxes, iou_threshold=self.IOU_THRESHOLD)
-        
-        # Assign track IDs and estimate motion
+            matches = self.match_detections(current_boxes_raw, self.prev_boxes,
+                                            iou_threshold=self.IOU_THRESHOLD)
+
+        # Per-detection: cached classifier → distance → motion → class smoothing
         for i, result in enumerate(results):
+            # Assign track ID
             if 'track_id' in result:
                 track_id = result['track_id']
             else:
-                track_id = matches[i] if matches[i] != -1 else self.track_id_counter
-                if matches[i] == -1:
+                track_id = (matches[i] if i < len(matches) and matches[i] != -1
+                            else self.track_id_counter)
+                if i >= len(matches) or matches[i] == -1:
                     self.track_id_counter += 1
                 result['track_id'] = track_id
-            
+
+            cls = result['class']
+
+            # Cached classifier — only for vehicle classes (not persons/bicycles/merged)
+            if cls not in ('Person', 'Bicycle', 'Two-wheeler') and 'Person +' not in cls:
+                cached = self._cls_cache.get(track_id)
+                stale  = (cached is None or
+                          (self._frame_count_internal - cached[2]) >= self._cls_interval)
+                if stale:
+                    x1, y1, x2, y2 = result['bbox']
+                    crop = frame[y1:y2, x1:x2]
+                    refined_cls, refined_conf = cls, float(result['confidence'])
+                    if crop.size > 0 and crop.shape[0] * crop.shape[1] >= self.MIN_CROP_AREA:
+                        try:
+                            cls_r = self.classifier(crop, verbose=False)
+                            if cls_r and len(cls_r) > 0:
+                                top1      = cls_r[0].probs.top1
+                                top1_conf = cls_r[0].probs.top1conf.item()
+                                if top1_conf > 0.4:
+                                    refined_cls  = cls_r[0].names[top1]
+                                    refined_conf = top1_conf
+                                    result['source'] = 'YOLO_CLS'
+                        except Exception:
+                            pass
+                    self._cls_cache[track_id] = (refined_cls, refined_conf,
+                                                 self._frame_count_internal)
+                else:
+                    refined_cls, refined_conf = cached[0], cached[1]
+                    result['source'] = 'CACHE'
+                result['class'] = refined_cls
+                result['confidence'] = refined_conf
+                cls = refined_cls
+
+            # Distance estimation with Kalman smoothing
             bbox_h = result['bbox'][3] - result['bbox'][1]
-            distance = self.estimate_distance(bbox_h, result['class'])
-            
-            # Apply Kalman filter smoothing
+            distance = self.estimate_distance(bbox_h, cls)
             smoothed_distance = self.kalman_filters[track_id].update(distance) if distance else None
-            
+
             result['distance'] = smoothed_distance
             result['distance_metadata'] = {
                 'method': 'classical_pinhole',
                 'confidence': 0.8,
                 'distance': smoothed_distance,
             }
-            
-            # Estimate motion
+
+            # Motion estimation
             if smoothed_distance:
                 motion, speed = self.estimate_motion(track_id, smoothed_distance)
                 result['motion'] = motion
-                result['speed'] = speed
+                result['speed']  = speed
             else:
-                result['motion'] = "unknown"
-                result['speed'] = 0.0
-            
-            # Per-track class smoothing
-            cls = result['class']
+                result['motion'] = 'unknown'
+                result['speed']  = 0.0
+
+            # Temporal class smoothing via confidence voting
             conf_val = float(result.get('confidence', 0.0))
             self.track_classes[track_id].append((cls, conf_val))
-            
             votes = {}
             for c, cconf in self.track_classes[track_id]:
                 votes.setdefault(c, 0.0)
                 votes[c] += cconf
-            
             if votes:
                 stable_class = max(votes.items(), key=lambda x: x[1])[0]
-                stable_conf = votes[stable_class] / len(self.track_classes[track_id])
-                if 'Person' in cls:
-                    result['class'] = cls
-                else:
-                    result['class'] = stable_class
+                stable_conf  = votes[stable_class] / len(self.track_classes[track_id])
+                if 'Person' not in cls:
+                    result['class']      = stable_class
                     result['confidence'] = float(min(1.0, stable_conf))
-        
+
+        # Purge stale classifier cache entries periodically
+        if self._frame_count_internal % 150 == 0:
+            active_ids = {r.get('track_id', -1) for r in results}
+            self._cls_cache = {k: v for k, v in self._cls_cache.items() if k in active_ids}
+
         self.prev_boxes = [{'bbox': r['bbox'], 'track_id': r['track_id']} for r in results]
-        
         return results
     
     def merge_rider_and_vehicle(self, results):
@@ -1149,163 +1161,179 @@ class CameraVehicleDetector:
         return inter_area / union_area if union_area > 0 else 0
     
     def draw_detections(self, frame, detections, fps=None):
-        """Draw bounding boxes with rich ADAS information"""
+        """Professional industry-grade ADAS HUD — ASCII-safe, clean layout"""
         annotated = frame.copy()
-        
-        # Draw top HUD bar for scenario summary and FPS
-        hud_height = 90
-        cv2.rectangle(annotated, (0, 0), (annotated.shape[1], hud_height), (0, 0, 0), -1)
-        cv2.putText(annotated, "LIVE VEHICLE DETECTION", (10, 30),
-                    cv2.FONT_HERSHEY_SIMPLEX, 0.9, (255, 255, 255), 2)
+        h, w = annotated.shape[:2]
 
-        # Scenario and threat information
+        # ── TOP HUD BAR ──────────────────────────────────────────────────────
+        HUD_H = 58
+        cv2.rectangle(annotated, (0, 0), (w, HUD_H), (18, 18, 28), -1)
+        cv2.line(annotated, (0, HUD_H), (w, HUD_H), (55, 55, 80), 1)
+
+        # Left: system name
+        cv2.putText(annotated, "REAR VIEW ADAS",
+                    (12, 26), cv2.FONT_HERSHEY_SIMPLEX, 0.72, (255, 255, 255), 2)
+        cv2.putText(annotated, "Advanced Driver Assistance System",
+                    (12, 48), cv2.FONT_HERSHEY_SIMPLEX, 0.37, (145, 150, 172), 1)
+
+        # Right: FPS counter
+        if fps is not None:
+            fps_col = ((0, 210, 0) if fps >= 25 else
+                       (0, 155, 255) if fps >= 15 else (30, 30, 220))
+            fps_str = f"FPS: {fps:.1f}"
+            fps_sz, _ = cv2.getTextSize(fps_str, cv2.FONT_HERSHEY_SIMPLEX, 0.62, 2)
+            cv2.putText(annotated, fps_str,
+                        (w - fps_sz[0] - 12, 32),
+                        cv2.FONT_HERSHEY_SIMPLEX, 0.62, fps_col, 2)
+            det_str = f"DET: {len(detections)}"
+            det_sz, _ = cv2.getTextSize(det_str, cv2.FONT_HERSHEY_SIMPLEX, 0.42, 1)
+            cv2.putText(annotated, det_str,
+                        (w - det_sz[0] - 12, 50),
+                        cv2.FONT_HERSHEY_SIMPLEX, 0.42, (160, 160, 180), 1)
+
+        # Center: scenario summary
         if hasattr(self, 'last_scenario_validation') and self.last_scenario_validation:
-            scenario = self.last_scenario_validation
-            scenario_text = (
-                f"Scenario: {scenario.get('scenario_type', 'unknown')} | "
-                f"Threat: {scenario.get('threat_level', 'none')} | "
-                f"Critical: {scenario.get('critical_vehicles_count', 0)}"
-            )
-            cv2.putText(annotated, scenario_text, (10, 60),
-                        cv2.FONT_HERSHEY_SIMPLEX, 0.7, (200, 255, 200), 2)
-        
-        # Additional FPS text overlay if available
-        if fps:
-            fps_text = f"FPS: {fps:.1f}"
-            cv2.putText(annotated, fps_text, (annotated.shape[1] - 250, 30),
-                        cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 255, 0), 2)
-        
-        # Define alert colors based on safety level
-        safety_colors = {
-            'CRITICAL': (0, 0, 255),      # Red
-            'WARNING': (0, 165, 255),     # Orange
-            'CAUTION': (0, 255, 255),     # Yellow
-            'SAFE': (0, 255, 0),          # Green
-            'INFO': (0, 165, 255),        # Orange
-            'unknown': (128, 128, 128)    # Gray
+            sv       = self.last_scenario_validation
+            sc_type  = sv.get('scenario_type', 'UNKNOWN').upper().replace('_', ' ')
+            threat   = sv.get('threat_level', 'none').upper()
+            crit_n   = sv.get('critical_vehicles_count', 0)
+            t_col    = ((30, 30, 215) if threat == 'HIGH'    else
+                        (30, 130, 255) if threat == 'MEDIUM' else (20, 185, 20))
+            sc_str   = f"{sc_type}  |  THREAT: {threat}  |  CRITICAL: {crit_n}"
+            sc_sz, _ = cv2.getTextSize(sc_str, cv2.FONT_HERSHEY_SIMPLEX, 0.43, 1)
+            cv2.putText(annotated, sc_str,
+                        ((w - sc_sz[0]) // 2, 38),
+                        cv2.FONT_HERSHEY_SIMPLEX, 0.43, t_col, 1)
+
+        # ── SAFETY COLOR MAP ─────────────────────────────────────────────────
+        SAFETY_COL = {
+            'CRITICAL': (30,  30, 215),
+            'WARNING':  (30, 140, 255),
+            'CAUTION':  (20, 210, 210),
+            'SAFE':     (20, 200,  20),
+            'INFO':     (130, 120, 205),
+            'unknown':  ( 95,  95,  95),
         }
-        
+
+        # ── PER-DETECTION RENDERING ───────────────────────────────────────────
         for det in detections:
             x1, y1, x2, y2 = det['bbox']
-            class_name = det['class']
-            confidence = det['confidence']
-            distance = det.get('distance', None)
-            distance_metadata = det.get('distance_metadata', {})
-            z_classical = distance_metadata.get('classical_fused', None)
-            z_ml = distance_metadata.get('ml', None)
-            motion = det.get('motion', 'unknown')
-            speed = det.get('speed', 0.0)
-            
-            # Get safety assessment
-            safety_assess = det.get('safety_assessment', {})
-            safety_level = safety_assess.get('level', 'unknown')
-            alert_type = safety_assess.get('alert_type', 'none')
-            
-            # Choose color based on safety level
-            if safety_level != 'unknown':
-                box_color = safety_colors.get(safety_level, (128, 128, 128))
-            else:
-                motion_colors = {
-                    'approaching': (0, 0, 255),    # Red
-                    'receding': (0, 255, 255),     # Yellow
-                    'stable': (0, 255, 0),         # Green
-                    'unknown': CLASS_COLORS.get(class_name, (255, 255, 255))
-                }
-                box_color = motion_colors.get(motion, CLASS_COLORS.get(class_name, (255, 255, 255)))
-            
-            # Draw box
-            cv2.rectangle(annotated, (x1, y1), (x2, y2), box_color, 3)
-            
-            # Draw label with distance and depth estimates
+            x1 = max(0, x1);       y1 = max(HUD_H + 2, y1)
+            x2 = min(w - 1, x2);   y2 = min(h - 1, y2)
+            if x2 <= x1 or y2 <= y1:
+                continue
+
+            class_name = det.get('class', 'Unknown')
+            confidence = det.get('confidence', 0.0)
+            distance   = det.get('distance')
+            motion     = det.get('motion', 'unknown')
+            speed      = det.get('speed', 0.0)
+            track_id   = det.get('track_id', -1)
+            safety_a   = det.get('safety_assessment', {})
+            safety_lvl = safety_a.get('level', 'unknown')
+            alert_type = safety_a.get('alert_type', 'none')
+
+            col   = SAFETY_COL.get(safety_lvl, (95, 95, 95))
+            thick = 3 if safety_lvl in ('CRITICAL', 'WARNING') else 2
+
+            # Bounding box
+            cv2.rectangle(annotated, (x1, y1), (x2, y2), col, thick)
+
+            # Corner tick marks to highlight critical detections
+            if safety_lvl == 'CRITICAL':
+                ck = 16
+                for px, py, sx, sy in [(x1,y1,1,1),(x2,y1,-1,1),(x1,y2,1,-1),(x2,y2,-1,-1)]:
+                    cv2.line(annotated, (px, py), (px + sx * ck, py), col, 3)
+                    cv2.line(annotated, (px, py), (px, py + sy * ck), col, 3)
+
+            # ─ Top label: T<id>  <Class>  <Conf>%
+            top_lbl  = f"T{track_id:02d}  {class_name}  {confidence * 100:.0f}%"
+            tl_sz, _ = cv2.getTextSize(top_lbl, cv2.FONT_HERSHEY_SIMPLEX, 0.50, 1)
+            tl_y0    = max(HUD_H + 2, y1 - tl_sz[1] - 8)
+            cv2.rectangle(annotated, (x1, tl_y0), (x1 + tl_sz[0] + 8, y1), col, -1)
+            cv2.putText(annotated, top_lbl, (x1 + 4, tl_y0 + tl_sz[1] + 2),
+                        cv2.FONT_HERSHEY_SIMPLEX, 0.50, (255, 255, 255), 1)
+
+            # ─ Bottom bar: distance + motion + speed
             if distance:
-                label = f"{class_name}: {confidence:.2f} | D:{distance:.1f}m"
-                if isinstance(z_classical, (int, float, np.floating)):
-                    label += f" C:{float(z_classical):.1f}"
-                if isinstance(z_ml, (int, float, np.floating)):
-                    label += f" ML:{float(z_ml):.1f}"
+                mot_part = (f"  {motion.upper()}  {speed:.1f}km/h"
+                            if speed > 0.5 else f"  {motion.upper()}")
+                btm_lbl = f"{distance:.1f}m{mot_part}"
             else:
-                label = f"{class_name}: {confidence:.2f}"
-            
-            label_size, _ = cv2.getTextSize(label, cv2.FONT_HERSHEY_SIMPLEX, 0.5, 2)
-            cv2.rectangle(annotated, (x1, y1 - label_size[1] - 10), 
-                         (x1 + label_size[0], y1), box_color, -1)
-            cv2.putText(annotated, label, (x1, y1 - 5), 
-                       cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2)
-            
-            # Draw distance below box
-            if distance:
-                dist_text = f"{distance:.1f}m"
-                dist_size, _ = cv2.getTextSize(dist_text, cv2.FONT_HERSHEY_SIMPLEX, 0.8, 2)
-                cv2.rectangle(annotated, (x1, y2), 
-                             (x1 + dist_size[0] + 10, y2 + dist_size[1] + 10), box_color, -1)
-                cv2.putText(annotated, dist_text, (x1 + 5, y2 + dist_size[1] + 5), 
-                           cv2.FONT_HERSHEY_SIMPLEX, 0.8, (255, 255, 255), 2)
-            
-            # Draw motion state
-            if motion != 'unknown':
-                if speed > 0:
-                    motion_text = f"{motion.upper()} {speed:.1f}km/h"
+                btm_lbl = "DIST: N/A"
+            bt_sz, _ = cv2.getTextSize(btm_lbl, cv2.FONT_HERSHEY_SIMPLEX, 0.50, 1)
+            bt_y2    = min(h - 1, y2 + bt_sz[1] + 8)
+            cv2.rectangle(annotated, (x1, y2), (x1 + bt_sz[0] + 8, bt_y2), col, -1)
+            cv2.putText(annotated, btm_lbl, (x1 + 4, bt_y2 - 3),
+                        cv2.FONT_HERSHEY_SIMPLEX, 0.50, (255, 255, 255), 1)
+
+            # ─ Safety metrics tag (active alerts only)
+            if safety_lvl not in ('unknown', 'SAFE') and alert_type != 'none':
+                lane_info = safety_a.get('lane_info') or {}
+                is_same   = safety_a.get('same_lane', True)
+                lane_nm   = lane_info.get('lane', 'CENTER')
+
+                if not is_same:
+                    s_str = f"[{lane_nm} LANE]  {distance:.1f}m"
+                    s_col = (30, 140, 255)
                 else:
-                    motion_text = motion.upper()
-                motion_size, _ = cv2.getTextSize(motion_text, cv2.FONT_HERSHEY_SIMPLEX, 0.6, 2)
-                motion_x = x2 - motion_size[0] - 10
-                motion_y = y1 + 25
-                cv2.rectangle(annotated, (motion_x - 5, motion_y - motion_size[1] - 5), 
-                             (x2 - 5, motion_y + 5), box_color, -1)
-                cv2.putText(annotated, motion_text, (motion_x, motion_y), 
-                           cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 2)
-            
-            # Draw safety assessment and rider action
-            if safety_level != 'unknown' and alert_type != 'none':
-                safety_y = y2 + 40
-                
-                lane_info = safety_assess.get('lane_info', {})
-                lane_name = lane_info.get('lane', 'CENTER') if lane_info else 'CENTER'
-                is_same_lane = safety_assess.get('same_lane', True)
-                
-                if not is_same_lane:
-                    safety_text = f"[{lane_name} LANE] {distance:.1f}m away"
-                    box_color_text = (0, 165, 255)
-                else:
-                    safety_text = f"[{safety_level}] {alert_type}"
-                    
-                    ttc_val = safety_assess.get('ttc')
-                    drac_val = safety_assess.get('drac')
-                    
-                    if ttc_val is not None:
-                        safety_text += f" TTC:{ttc_val:.2f}s"
-                    if drac_val is not None and drac_val != float('inf'):
-                        safety_text += f" DRAC:{drac_val:.2f}m/s²"
-                    
-                    box_color_text = box_color
-                
-                safety_size, _ = cv2.getTextSize(safety_text, cv2.FONT_HERSHEY_SIMPLEX, 0.5, 1)
-                cv2.rectangle(annotated, (x1, safety_y - safety_size[1] - 5), 
-                             (x1 + safety_size[0] + 10, safety_y + 5), box_color_text, -1)
-                cv2.putText(annotated, safety_text, (x1 + 5, safety_y), 
-                           cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1)
-                
-                # Draw rider action recommendation
-                rider_action = safety_assess.get('rider_action', {})
-                if rider_action and rider_action.get('action'):
-                    instruction = rider_action.get('rider_instruction', '')
-                    urgency = rider_action.get('urgency', 'LOW')
-                    
-                    urgency_colors = {
-                        'CRITICAL': (0, 0, 255),      # Red
-                        'HIGH': (0, 165, 255),        # Orange
-                        'MEDIUM': (0, 255, 255),      # Yellow
-                        'LOW': (0, 255, 0),           # Green
-                    }
-                    urgency_color = urgency_colors.get(urgency, (128, 128, 128))
-                    
-                    action_y = safety_y + 25
-                    action_text = f"→ {instruction[:50]}"
-                    action_size, _ = cv2.getTextSize(action_text, cv2.FONT_HERSHEY_SIMPLEX, 0.5, 1)
-                    cv2.rectangle(annotated, (x1, action_y - action_size[1] - 5), 
-                                 (x1 + action_size[0] + 10, action_y + 5), urgency_color, -1)
-                    cv2.putText(annotated, action_text, (x1 + 5, action_y), 
-                               cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1)
+                    ttc_v  = safety_a.get('ttc')
+                    drac_v = safety_a.get('drac')
+                    s_str  = f"[{safety_lvl}]"
+                    if ttc_v is not None:
+                        s_str += f"  TTC {ttc_v:.2f}s"
+                    if drac_v is not None and drac_v != float('inf'):
+                        s_str += f"  DRAC {drac_v:.2f}m/s2"
+                    s_col = col
+
+                s_sz, _ = cv2.getTextSize(s_str, cv2.FONT_HERSHEY_SIMPLEX, 0.46, 1)
+                s_top   = min(h - 50, bt_y2 + 2)
+                cv2.rectangle(annotated, (x1, s_top),
+                              (x1 + s_sz[0] + 8, s_top + s_sz[1] + 6), s_col, -1)
+                cv2.putText(annotated, s_str, (x1 + 4, s_top + s_sz[1] + 2),
+                            cv2.FONT_HERSHEY_SIMPLEX, 0.46, (255, 255, 255), 1)
+
+                # Rider action instruction
+                rider_a = safety_a.get('rider_action') or {}
+                if rider_a.get('action'):
+                    urgency  = rider_a.get('urgency', 'LOW')
+                    instr    = rider_a.get('rider_instruction', '')[:52]
+                    urg_col  = {
+                        'CRITICAL': (30,  30, 200),
+                        'HIGH':     (30, 120, 255),
+                        'MEDIUM':   (20, 195, 195),
+                        'LOW':      (20, 170,  20),
+                    }.get(urgency, (75, 75, 75))
+                    a_str  = f">> {instr}"
+                    a_sz, _ = cv2.getTextSize(a_str, cv2.FONT_HERSHEY_SIMPLEX, 0.44, 1)
+                    a_top   = s_top + s_sz[1] + 8
+                    if a_top + a_sz[1] + 8 < h:
+                        cv2.rectangle(annotated, (x1, a_top),
+                                      (x1 + a_sz[0] + 8, a_top + a_sz[1] + 6), urg_col, -1)
+                        cv2.putText(annotated, a_str, (x1 + 4, a_top + a_sz[1] + 2),
+                                    cv2.FONT_HERSHEY_SIMPLEX, 0.44, (255, 255, 255), 1)
+
+        # ── LEGEND PANEL (bottom-right corner) ───────────────────────────────
+        LEG_ITEMS = [
+            ("CRITICAL", (30,  30, 215)),
+            ("WARNING",  (30, 140, 255)),
+            ("CAUTION",  (20, 210, 210)),
+            ("SAFE",     (20, 200,  20)),
+        ]
+        row_h  = 20
+        leg_w  = 130
+        leg_h  = len(LEG_ITEMS) * row_h + 26
+        lx     = w - leg_w - 8
+        ly     = h - leg_h - 8
+        cv2.rectangle(annotated, (lx - 6, ly - 6), (w - 4, h - 4), (16, 16, 24), -1)
+        cv2.rectangle(annotated, (lx - 6, ly - 6), (w - 4, h - 4), (55, 55, 75), 1)
+        cv2.putText(annotated, "SAFETY LEVEL", (lx, ly + 13),
+                    cv2.FONT_HERSHEY_SIMPLEX, 0.36, (165, 165, 190), 1)
+        for idx, (name, lcol) in enumerate(LEG_ITEMS):
+            iy = ly + 24 + idx * row_h
+            cv2.rectangle(annotated, (lx, iy), (lx + 14, iy + 12), lcol, -1)
+            cv2.putText(annotated, name, (lx + 20, iy + 11),
+                        cv2.FONT_HERSHEY_SIMPLEX, 0.36, (190, 190, 208), 1)
 
         return annotated
 
